@@ -12,23 +12,23 @@ public class Node{
     private int nodeSize;
     private int minNonLeafNodeSize;
     private int minLeafNodeSize;
-    static final int Node_Size = B+Tree.NODE.SIZE;
+    static final int Node_Size = BpTree.Node_Size;
     private NonLeafNode parent;
     protected ArrayList<Integer> keys;
     Node rootNode;
 
 
     public Node(){
-        this.rootNode = B+Tree.getRoot();
+        this.rootNode = BpTree.getRoot();
         this.isLeaf = false;
         this.isRoot = false;
-        this.nodeSize = NODE_SIZE;
+        this.nodeSize = Node_Size;
         this.minLeafNodeSize = (int) (Math.floor((nodeSize + 1) / 2));
-        this.minNonLeafNodeSize = (int) (Math.floor(nodeSize / 2))
+        this.minNonLeafNodeSize = (int) (Math.floor(nodeSize / 2));
     }
 
     public int getMinLeafNodeSize(){
-        return this.getMinLeafNodeSize;
+        return this.minLeafNodeSize;
     }
 
     public int getMinNonLeafNodeSize(){
@@ -51,6 +51,10 @@ public class Node{
         return isRoot;
     }
     
+    public void setIsRoot(boolean isARoot){
+        isRoot = isARoot;
+    }
+    
     public NonLeafNode getParent(){
         return this.parent;
     }
@@ -60,7 +64,7 @@ public class Node{
             this.setIsRoot(false);
             setParent.setIsRoot(true);
             setParent.setIsLeaf(false);
-            B+Tree.setRoot(setParent);
+            BpTree.setRoot(setParent);
         }
         else{
             setParent.setIsLeaf(false);
@@ -88,7 +92,7 @@ public class Node{
         return keys.size();
     }
     public int getLastKey(){
-        return this.keyseys.get(keys.size()-1);
+        return this.keys.get(keys.size()-1);
     }
     public int getFirstKey(){
         return this.keys.get(0);
