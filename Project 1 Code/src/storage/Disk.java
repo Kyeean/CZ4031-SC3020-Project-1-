@@ -19,7 +19,7 @@ public class Disk {
         this.blocks = new Block[diskSize / blockSize];
         this.availableBlocks = new boolean[diskSize / blockSize];
         this.filledBlocks = new boolean[diskSize / blockSize];
-        // initialise all available blocks in hashMap
+  
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = new Block(blockSize);
             availableBlocks[i] = true;
@@ -52,7 +52,7 @@ public class Disk {
         if(blockPtr == -1){
             return null;
         }
-        int addr = blocks[blockPtr].insertRecordIntoBlocks(r);
+        int addr = blocks[blockPtr].insertRecord(r);
         filledBlocks[addr] = true;
         if(!blocks[blockPtr].isBlockAvailable()){
             availableBlocks[blockPtr] = false;
@@ -60,35 +60,19 @@ public class Disk {
         return new Address(blockPtr, addr);
     }
     
-    public int getNumberBlockUsed() {
-        int usedBlocks;
-        for(int i = 0; i < filledBlocks.length; i++){
-            if(filledBlocks[i] = true)
-                usedBlocks++;
-        }
-        return usedBlocks;
-    }
+    public int getNoOfFilledBlocks() {
+        int count = 0;
 
-    public int getBlockAccesses() {
-        return blockAccesses;
+        for(int i = 0; i < filledBlocks.length; i++){
+            if(filledBlocks[i] = true){
+                count++;
+            }
+        }
+        return count;
     }
 
     private Block getBlock(int blockNumber) {
-        Block block = lruCache.get(blockNumber);
-        if (block != null) {
-            //blockAccessReduced++;
-        }
-        if (block == null && blockNumber >= 0) {
-            // 1 I/O
-            block = blocks[blockNumber];
-            //blockAccesses++;
-            lruCache.put(blockNumber, block);
-        }
-        return block;
-    }
-
-    public int getBlockAccessReduced() {
-        return blockAccessReduced;
+        return blocks[blockNumber];
     }
 
     public Record getRecord(Address addr) {
@@ -108,11 +92,11 @@ public class Disk {
         for (int i = 0; i < filledBlocks.length; i++) {
             if(filledBlocks[i] = true){
                 countBlockAccess++;
-                Block block = blocks[blockPtr];
+                Block block = blocks[i];
                 int numberOfRecordsInBlock = block.getCurSize();
                 for (int j = 0; j < numberOfRecordsInBlock; j++) {
                     // retrieve the record
-                    r = block.getRecordFromBlock(j);
+                    r = block.getRecord(j);
                     curNumVotes = r.getNumVotes();
                     if (numVotesValue <= curNumVotes && curNumVotes <= numVotesValueUpperRange) {
                         foundRecords.add(r);
@@ -145,7 +129,7 @@ public class Disk {
     public void experimentOne() {
         System.out.println("\n----------------------EXPERIMENT 1-----------------------");
         System.out.printf("Total Number of Records Stored: %d\n", this.getNumberOfRecords());
-        System.out.println(String.format("Size of Each Record: %d Bytes", Record.getRecordSize()));
+        System.out.println(String.format("Size of Each Record: %d Bytes", Record.size()));
         System.out.printf("Number of Records Stored in a Block: %d\n", Block.getTotalRecords());
         System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNumberBlockUsed()));
     }
