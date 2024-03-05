@@ -7,15 +7,12 @@ public class Disk {
     private Block[] blocks;
 
     private int recordCount = 0;
-    private int diskSize;
-    private int blockSize;
     
     private boolean[] availableBlocks;
     private boolean[] filledBlocks;
 
     public Disk(int diskSize, int blockSize) {
-        this.diskSize = diskSize;
-        this.blockSize = blockSize;
+        
         this.blocks = new Block[diskSize / blockSize];
         this.availableBlocks = new boolean[diskSize / blockSize];
         this.filledBlocks = new boolean[diskSize / blockSize];
@@ -131,6 +128,6 @@ public class Disk {
         System.out.printf("Total Number of Records Stored: %d\n", this.getNumberOfRecords());
         System.out.println(String.format("Size of Each Record: %d Bytes", Record.size()));
         System.out.printf("Number of Records Stored in a Block: %d\n", Block.getTotalRecords());
-        System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNumberBlockUsed()));
+        System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNoOfFilledBlocks()));
     }
 }
