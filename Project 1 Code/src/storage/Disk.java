@@ -30,7 +30,7 @@ public class Disk {
 
     public Address writeRecordToStorage(Record r){
         recordCount++;
-        int blockPtr = getFirstAvailableBlockID();
+        int blockPtr = getFirstAvailableBlockId();
         Address addressofRecordStored = this.insertRecordIntoBlock(blockPtr, r);
         return addressofRecordStored;
     }
@@ -54,7 +54,7 @@ public class Disk {
         }
         int addr = blocks[blockPtr].insertRecordIntoBlocks(r);
         filledBlocks[addr] = true;
-        if(!blocks[blockPtr.isBlockAvailable()]){
+        if(!blocks[blockPtr].isBlockAvailable()){
             availableBlocks[blockPtr] = false;
         }
         return new Address(blockPtr, addr);
@@ -69,6 +69,10 @@ public class Disk {
         return usedBlocks;
     }
 
+    public int getBlockAccesses() {
+        return blockAccesses;
+    }
+
     private Block getBlock(int blockNumber) {
         Block block = lruCache.get(blockNumber);
         if (block != null) {
@@ -81,6 +85,10 @@ public class Disk {
             lruCache.put(blockNumber, block);
         }
         return block;
+    }
+
+    public int getBlockAccessReduced() {
+        return blockAccessReduced;
     }
 
     public Record getRecord(Address addr) {
@@ -120,4 +128,25 @@ public class Disk {
         return countBlockAccess;
     }
 
+    public void deleteRecord(ArrayList<Address> addList) {
+        for (Address add : addList) {
+            int blockId = add.getBlockId();
+            int position = add.getPosition();
+            Block block = getBlock(blockId);
+            block.deleteRecord(position);
+            if (filledBlocks[blockId] == true) {
+                filledBlocks[blockId] = false;
+            }
+            availableBlocks[blockId] = true;
+        }
+    }
+
+
+    public void experimentOne() {
+        System.out.println("\n----------------------EXPERIMENT 1-----------------------");
+        System.out.printf("Total Number of Records Stored: %d\n", this.getNumberOfRecords());
+        System.out.println(String.format("Size of Each Record: %d Bytes", Record.getRecordSize()));
+        System.out.printf("Number of Records Stored in a Block: %d\n", Block.getTotalRecords());
+        System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNumberBlockUsed()));
+    }
 }
