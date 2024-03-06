@@ -11,7 +11,7 @@ import storage.Address;
  */
 public class LeafNode extends Node {
 
-    protected TreeMap<Integer, ArrayList<Address>> recordMap;
+    protected TreeMap<Integer, ArrayList<Address>> map;
     protected ArrayList<Address> records;
     private LeafNode nextNode;
     private LeafNode prevNode;
@@ -25,15 +25,15 @@ public class LeafNode extends Node {
 
     /* Find records associated with the key. */
     public ArrayList<Address> findRecords(int key) {
-        if (recordMap.containsKey(key) || this.keys.contains(key)) {
-            return recordMap.get(key);
+        if (map.containsKey(key) || this.keys.contains(key)) {
+            return map.get(key);
         }
         return null;
     }
 
     /* Get Addresses for a given key. */
     public ArrayList<Address> getAddressesForKey(int key) {
-        return recordMap.get(key);
+        return map.get(key);
     }
 
     /* Add a record with the given key and address object. */
@@ -42,7 +42,7 @@ public class LeafNode extends Node {
 
         if (this.keys == null) {
             initializeNodeWithRecord(key, add);
-        } else if (recordMap.containsKey(key) || this.keys.contains(key)) {
+        } else if (map.containsKey(key) || this.keys.contains(key)) {
             updateExistingRecord(key, add);
         } else if (this.keys.size() < n) {
             addNewRecordToNode(key, add);
@@ -55,24 +55,24 @@ public class LeafNode extends Node {
         this.records = new ArrayList<>();
         this.records.add(add);
 
-        this.recordMap = new TreeMap<>();
-        this.recordMap.put(key, records);
+        this.map = new TreeMap<>();
+        this.map.put(key, records);
 
         this.keys = new ArrayList<>();
         insertInOrder(this.keys, key);
     }
 
     private void updateExistingRecord(int key, Address add) {
-        ArrayList<Address> existingRecords = recordMap.get(key);
+        ArrayList<Address> existingRecords = map.get(key);
         existingRecords.add(add);
-        recordMap.put(key, existingRecords);
+        map.put(key, existingRecords);
     }
 
     private void addNewRecordToNode(int key, Address add) {
         this.records = new ArrayList<>();
         this.records.add(add);
 
-        this.recordMap.put(key, records);
+        this.map.put(key, records);
 
         insertInOrder(this.keys, key);
     }
@@ -162,7 +162,7 @@ public class LeafNode extends Node {
      * @param add the addresses to be inserted into the recordMap.
      */
     public void insertByRedistribution(int key, ArrayList<Address> add) {
-        recordMap.put(key, add);
+        map.put(key, add);
     }
 
     /**
@@ -171,7 +171,7 @@ public class LeafNode extends Node {
      * @param key the key to be removed.
      */
     public void removeKeyInMap(int key) {
-        recordMap.remove(key);
+        map.remove(key);
     }
 
     /**
@@ -182,6 +182,6 @@ public class LeafNode extends Node {
     @Override
     public String toString() {
         return String.format("\n--------LEAF NODE CONTAINS: map %s records %s, nextNode ------------\n",
-                recordMap.toString(), records, nextNode);
+                map.toString(), records, nextNode);
     }
 }
