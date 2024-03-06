@@ -1,9 +1,9 @@
 package storage;
 
 public class Block {
-    int currentRecords;     // Number of reccords in the block
-    int totalRecords;       // Total number of records in a block
-    Record[] records;       // The records in a block
+    private int currentRecords;     // Number of reccords in the block
+    private static int totalRecords;       // Total number of records in a block
+    private Record[] records;       // The records in a block
 
     public Block(int BLOCK_SIZE) {
         this.currentRecords = 0;
@@ -17,6 +17,14 @@ public class Block {
 
     public Record getRecord(int pos) {
         return records[pos];
+    }
+
+    public int getCurSize() {
+        return currentRecords;
+    }
+
+    public static int getTotalRecords() {
+        return totalRecords;
     }
 
     public int insertRecord(Record r) {
