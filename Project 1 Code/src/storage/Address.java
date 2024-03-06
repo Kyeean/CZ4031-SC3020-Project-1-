@@ -24,7 +24,7 @@ public class Address{
 
     @Override
     public String toString() {
-        return String.format("blk %d offset %d", blockID, position);
+        return String.format("blk %d position %d", blockID, position);
     }
 
 }
