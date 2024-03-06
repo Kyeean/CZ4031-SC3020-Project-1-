@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
+import java.util.Set;
 import storage.Address;
 /* 
  * This class represents a node in a B+ Tree 
@@ -132,7 +132,7 @@ public class Node {
         else{
             setParent.setLeaf(false);
         }
-        this.parent.setParent;
+        this.parent = setParent;
     }
 
 
