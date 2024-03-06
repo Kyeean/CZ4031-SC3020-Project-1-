@@ -26,6 +26,66 @@ public class Node {
         this.LeafNodeSize = (int) (Math.floor((nodeSize + 1) / 2));
         this.NonLeafSize = (int) (Math.floor(nodeSize / 2));
     }
+    public void removeKeyAtLast(){
+        this.keys.remove(keys.size()-1);
+    }
+    public void replaceKeyAt(int index, int key){
+        keys.set(index, key);
+    }
+    public ArrayList<Integer> getKeys(){
+        return this.keys;
+    }
+    public void printNode(){
+        System.out.println(keys);
+    }
+    public int getKey(int index){
+        return this.keys.get(index);
+    }
+    public int getKeySize(){
+        return keys.size();
+    }
+    public int getLastKey(){
+        return this.keys.get(keys.size()-1);
+    }
+    public int getFirstKey(){
+        return this.keys.get(0);
+    }
+    public int removeKeyAt(int index){
+        return keys.remove(index);
+    }
+    int searchKey(int key, boolean upperBound){
+        int keyCount = keys.size();
+        return searchKey(0, keyCount-1, key, upperBound);
+    }
+    private int searchKey(int left, int right, int key, boolean upperBound){
+        if (left > right)
+            return left;
+        int middle = (left+right)/2;
+        int middleKey = getKeyAt(middle);
+        if(middleKey < key){
+            return searchKey(middle+1, right, key, upperBound);
+        }
+        else if(middleKey > key){
+            return searchKey(left, middle - 1, key, upperBound);
+        }
+        else{
+            while(middle < keys.size() && keys.get(middle)==key)
+                middle++;
+            if(!upperBound)
+                return middle - 1;
+            return middle;
+            }
+    }
+    public int getKeyAt(int index) {
+        return keys.get(index);
+    }
+    public int getLastIdx() {
+        return keys.size() - 1;
+    }
+
+    void insertKeyAt(int index, int key) {
+        keys.add(index, key);
+    }
 
     public int getLeafNodeSize(){
         return this.LeafNodeSize;
@@ -72,70 +132,6 @@ public class Node {
         this.parent.setParent;
     }
 
-    public void removeKeyAtLast(){
-        this.keys.remove(keys.size()-1);
-    }
-    void replaceKeyAt(int index, int key){
-        keys.set(index, key);
-    }
-
-    public ArrayList<Integer> getKeys(){
-        return this.keys;
-    }
-    public void printNode(){
-        System.out.println(keys);
-    }
-    public int getKey(int index){
-        return this.keys.get(index);
-    }
-    public int getKeySize(){
-        return keys.size();
-    }
-    public int getLastKey(){
-        return this.keys.get(keys.size()-1);
-    }
-    public int getFirstKey(){
-        return this.keys.get(0);
-    }
-    int removeKeyAt(int index){
-        return keys.remove(index);
-    }
-
-    int searchKey(int key, boolean upperBound){
-        int keyCount = keys.size();
-        return searchKey(0, keyCount-1, key, upperBound);
-    }
-
-    private int searchKey(int left, int right, int key, boolean upperBound){
-        if (left > right)
-            return left;
-        int middle = (left+right)/2;
-        int middleKey = getKeyAt(middle);
-        if(middleKey < key){
-            return searchKey(middle+1, right, key, upperBound);
-        }
-        else if(middleKey > key){
-            return searchKey(left, middle - 1, key, upperBound);
-        }
-        else{
-            while(middle < keys.size() && keys.get(middle)==key)
-                middle++;
-            if(!upperBound)
-                return middle - 1;
-            return middle;
-            }
-    }
-    int getKeyAt(int index) {
-        return keys.get(index);
-    }
-
-    public int getLastIdx() {
-        return keys.size() - 1;
-    }
-
-    void insertKeyAt(int index, int key) {
-        keys.add(index, key);
-    }
 
     boolean isUnderUtilized(int maxKeyCount) {
         if (isRoot()) {
