@@ -1,8 +1,11 @@
 package index;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import storage.Address;
 /* 
  * This class represents a node in a B+ Tree 
 */
@@ -224,9 +227,140 @@ public class Node {
 
         newNode.setParent(this.getParent());
 
-
-
-
-
     }
+    public void createFirstParentNode(LeafNode newNode) {
+    NonLeafNode newParent = new NonLeafNode();
+    PerformanceRecorder.addOneNode();
+    newParent.keys = new ArrayList<Integer>();
+    newParent.addChild(this);
+    newParent.addChild(newNode);
+    newParent.keys.add(newNode.getKey(0));
+    this.setParent(newParent);
+    newNode.setParent(newParent);
+}
+
+public void createRootNode(NonLeafNode newNode) {
+    NonLeafNode newParent = new NonLeafNode();
+    PerformanceRecorder.addOneNode();
+    newParent.keys = new ArrayList<Integer>();
+    newParent.addChild(this);
+    newParent.addChild(newNode);
+    newParent.keys.add(newNode.getKey(0));
+    this.setParent(newParent);
+    newNode.setParent(newParent);
+}
+
+public LeafNode leafSplitAndDistribute(int key, Address addr) {
+    LeafNode newNode = new LeafNode();
+    PerformanceRecorder.addOneNode();
+    ((LeafNode) this).records = new ArrayList<Address>();
+    ((LeafNode) this).records.add(addr);
+    ((LeafNode) this).map.put(key, ((LeafNode) this).records);
+
+    int n = NODE_SIZE - NonLeafSize + 1;
+    int i = 0;
+    int fromKey = 0;
+
+    for (Map.Entry<Integer, ArrayList<Address>> entry : ((LeafNode) this).map.entrySet()) {
+        if (i == n) {
+            fromKey = entry.getKey();
+            break;
+        }
+        i++;
+    }
+
+    SortedMap<Integer, ArrayList<Address>> lastnKeys = ((LeafNode) this).map.subMap(fromKey, true,
+            ((LeafNode) this).map.lastKey(), true);
+
+    newNode.map = new TreeMap<Integer, ArrayList<Address>>(lastnKeys);
+
+    lastnKeys.clear();
+
+    insertInOrder(this.keys, key);
+
+    newNode.keys = new ArrayList<Integer>(this.keys.subList(n, this.keys.size()));
+    this.keys.subList(n, this.keys.size()).clear();
+
+    if (((LeafNode) this).getNext() != null) {
+        newNode.setNext(((LeafNode) this).getNext());
+        ((LeafNode) this).getNext().setPrevious(newNode);
+    }
+    ((LeafNode) this).setNext(newNode);
+    newNode.setPrevious(((LeafNode) this));
+    return newNode;
+}
+
+public NonLeafNode nonLeafSplitAndDistribute() {
+    NonLeafNode currentParent = (NonLeafNode) (this);
+    NonLeafNode newParent = new NonLeafNode();
+    PerformanceRecorder.addOneNode();
+    newParent.keys = new ArrayList<Integer>();
+
+    int keyToSplitAt = currentParent.getKeyAt(NonLeafSize);
+    for (int k = currentParent.getKeySize(); k > 0; k--) {
+        if (currentParent.getKeyAt(k - 1) < keyToSplitAt) {
+            break;
+        }
+        int currentKey = currentParent.getKeyAt(k - 1);
+        Node currentChild = currentParent.getChild(k);
+
+        newParent.children.add(0, currentChild);
+        newParent.keys.add(0, currentKey);
+        currentChild.setParent(newParent);
+
+        currentParent.removeChild(currentParent.getChild(k));
+        currentParent.keys.remove(k - 1);
+    }
+
+    return newParent;
+}
+
+public void splitLeafNode(int key, Address addr) {
+    LeafNode newNode = this.leafSplitAndDistribute(key, addr);
+
+    if (this.getParent() != null) {
+        this.insertNewNodeToParent(newNode);
+
+        if (this.getParent().getKeySize() > NODE_SIZE) {
+            this.getParent().splitNonLeafNode();
+        }
+    } else {
+        this.createFirstParentNode(newNode);
+    }
+}
+
+public void splitNonLeafNode() {
+    NonLeafNode newParent = this.nonLeafSplitAndDistribute();
+
+    if (this.getParent() != null) {
+        insertChildInOrder(this.getParent(), newParent);
+        newParent.setParent(this.getParent());
+
+        insertInOrder(this.getParent().keys, newParent.getKeyAt(0));
+        newParent.keys.remove(0);
+
+        if (this.getParent().getKeySize() > NODE_SIZE) {
+            this.getParent().splitNonLeafNode();
+        }
+    } else {
+        NonLeafNode newRoot = new NonLeafNode();
+        PerformanceRecorder.addOneNode();
+        newRoot.keys = new ArrayList<Integer>();
+        newRoot.keys.add(newParent.getKeyAt(0));
+
+        newParent.keys.remove(0);
+
+        newRoot.addChild(this);
+        newRoot.addChild(newParent);
+
+        this.setParent(newRoot);
+        newParent.setParent(newRoot);
+
+        BpTree.setRoot(newRoot);
+    }
+}
+
+
+
+
 }
