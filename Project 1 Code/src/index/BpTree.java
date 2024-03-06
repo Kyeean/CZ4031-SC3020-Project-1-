@@ -6,7 +6,7 @@ import java.util.List;
 import storage.Address;
 import storage.Disk;
 import storage.Record;
-//import utils.Parser;
+import util.Parser;
 
 public class BpTree {
 
@@ -242,23 +242,23 @@ private void handleInvalidInternal(Node underUtilizedNode,
 
     if (prevInternal != null && prevInternal.isAbleToGiveOneKey(NODE_SIZE)) {
         // Move one key from the left non-leaf node
-        moveOneKeyNonLeafNode(prevInternal, (NonLeafNode) underUtilizedInternal, true, parent, parentKeyIndex);
+        moveKeyInNonLeafNode(prevInternal, (NonLeafNode) underUtilizedInternal, true, parent, parentKeyIndex);
     } else if (nextInternal != null && nextInternal.isAbleToGiveOneKey(NODE_SIZE)) {
         // Move one key from the right non-leaf node
-        moveOneKeyNonLeafNode(nextInternal, (NonLeafNode) underUtilizedInternal, false, parent, parentKeyIndex + 1);
+        moveKeyInNonLeafNode(nextInternal, (NonLeafNode) underUtilizedInternal, false, parent, parentKeyIndex + 1);
     }
     // Now, check if we can merge with the left node
     else if (prevInternal != null &&
             (underUtilizedInternal.getKeySize() + prevInternal.getKeySize()) <= NODE_SIZE) {
         // Merge with the left Non-Leaf node
-        mergeNonLeafNodes(prevInternal, (NonLeafNode) underUtilizedInternal, parent,
+        mergeLeafNodes(prevInternal, (NonLeafNode) underUtilizedInternal, parent,
                 parentPointerIndex, parentKeyIndex, true);
     }
     // Check if we can merge with the right node
     else if (nextInternal != null &&
             (underUtilizedInternal.getKeySize() + nextInternal.getKeySize()) <= NODE_SIZE) {
         // Merge with the right Non-Leaf Node
-        mergeNonLeafNodes((NonLeafNode) underUtilizedInternal, nextInternal, parent,
+        mergeLeafNodes((NonLeafNode) underUtilizedInternal, nextInternal, parent,
                 parentPointerIndex + 1, parentKeyIndex + 1, false);
     } else {
         throw new IllegalStateException("Can't merge or redistribute internal node " + underUtilizedInternal);
@@ -270,16 +270,16 @@ private void moveKeyInNonLeafNode(NonLeafNode giver, NonLeafNode receiver,
     int key;
 
     if (giverOnLeft) {
-        giver.removeLastKey();
+        giver.removeKeyAtLast();
         Node nodeToMove = giver.removeChildAt(giver.getKeySize());
         receiver.addChildAt(receiver.getKeySize(), nodeToMove);
-        receiver.addKeyAt(receiver.getKeySize(), receiver.getChild(1).getFirstKey());
+        receiver.insertKeyAt(receiver.getKeySize(), receiver.getChild(1).getFirstKey());
         key = receiver.getKeyAt(0);
     } else {
         giver.removeFirstKey();
         Node nodeToMove = giver.removeChildAt(0);
         receiver.addChildAt(0, nodeToMove);
-        receiver.addKeyAt(receiver.getKeySize(), receiver.getChild(1).getFirstKey());
+        receiver.insertKeyAt(receiver.getKeySize(), receiver.getChild(1).getFirstKey());
         key = receiver.getKeyAt(0);
     }
 
@@ -309,28 +309,28 @@ private void mergeNodesInNonLeaf(NonLeafNode nodeToMergeTo, NonLeafNode current,
         keyToRemove = nodeToMergeTo.getChild(nodeToMergeTo.getKeySize()).getLastKey();
 
         for (int i = 0; i < moveKeyCount; i++) {
-            nodeToMergeTo.addKeyAt(nodeToMergeTo.getKeySize(), current.getKeyAt(i));
+            nodeToMergeTo.insertKeyAt(nodeToMergeTo.getKeySize(), current.getKeyAt(i));
         }
 
         for (int i = 0; i < current.getChildren().size(); i++) {
             nodeToMergeTo.addChild(current.removeChildAt(i));
         }
 
-        nodeToMergeTo.addKeyAt(nodeToMergeTo.getKeySize(), nodeToMergeTo.getChild(nodeToMergeTo.getKeySize() + 1).getFirstKey());
+        nodeToMergeTo.insertKeyAt(nodeToMergeTo.getKeySize(), nodeToMergeTo.getChild(nodeToMergeTo.getKeySize() + 1).getFirstKey());
         current.getParent().removeChild(current);
     } else {
         int moveKeyCount = current.getKeySize();
         keyToRemove = current.getFirstKey();
 
         for (int i = 0; i < moveKeyCount; i++) {
-            nodeToMergeTo.addKeyAt(0, current.getKeyAt(i));
+            nodeToMergeTo.insertKeyAt(0, current.getKeyAt(i));
         }
 
         for (int i = 0; i < current.getChildren().size(); i++) {
             nodeToMergeTo.addChildAt(0, current.removeChildAt(i));
         }
 
-        nodeToMergeTo.addKeyAt(0, nodeToMergeTo.getChild(1).getFirstKey());
+        nodeToMergeTo.insertKeyAt(0, nodeToMergeTo.getChild(1).getFirstKey());
         current.getParent().removeChild(current);
     }
 
@@ -349,21 +349,21 @@ private void mergeNodesInNonLeaf(NonLeafNode nodeToMergeTo, NonLeafNode current,
     }
 }
 
-private void mergeLeafNodes(LeafNode nodeToMergeTo, LeafNode current, NonLeafNode parent,
+private void mergeLeafNodes(NonLeafNode prevInternal, NonLeafNode underUtilizedInternal, NonLeafNode parent,
                             int rightPointerIdx, int inBetweenKeyIdx, boolean mergeToRight) {
     int removedKey = 0;
-    int moveKeyCount = current.getKeySize();
-    int numberOfChildren = current.getParent().getChildren().size();
+    int moveKeyCount = underUtilizedInternal.getKeySize();
+    int numberOfChildren = underUtilizedInternal.getParent().getChildren().size();
 
     for (int i = 0; i < moveKeyCount; i++) {
-        removedKey = current.removeKeyAt(0);
-        int leftLastIdx = nodeToMergeTo.getLastIdx();
-        nodeToMergeTo.insertKeyAt(leftLastIdx + 1, removedKey);
-        nodeToMergeTo.insertByRedistribution(removedKey, current.getAddressesForKey(removedKey));
-        current.removeKeyInMap(removedKey);
+        removedKey = underUtilizedInternal.removeKeyAt(0);
+        int leftLastIdx = prevInternal.getLastIdx();
+        prevInternal.insertKeyAt(leftLastIdx + 1, removedKey);
+        prevInternal.insertByRedistribution(removedKey, underUtilizedInternal.getAddressesForKey(removedKey));
+        underUtilizedInternal.removeKeyInMap(removedKey);
     }
 
-    parent.removeChild(current);
+    parent.removeChild(underUtilizedInternal);
 
     if (parent.getChildren().size() == parent.getKeySize()) {
         // No need to update parent
@@ -372,34 +372,34 @@ private void mergeLeafNodes(LeafNode nodeToMergeTo, LeafNode current, NonLeafNod
     }
 
     if (mergeToRight) {
-        if (current.getNext() != null) {
-            LeafNode currentNext = current.getNext();
-            currentNext.setPrevious(current.getPrevious());
+        if (underUtilizedInternal.getNext() != null) {
+            LeafNode currentNext = underUtilizedInternal.getNext();
+            currentNext.setPrevious(underUtilizedInternal.getPrevious());
         }
 
-        nodeToMergeTo.setNext(current.getNext());
+        prevInternal.setNext(underUtilizedInternal.getNext());
 
-        if (current.getKeySize() == 0) {
-            NonLeafNode currParent = current.getParent();
-            currParent.removeChild(current);
+        if (underUtilizedInternal.getKeySize() == 0) {
+            NonLeafNode currParent = underUtilizedInternal.getParent();
+            currParent.removeChild(underUtilizedInternal);
             currParent.removeKeyAt(0);
         }
     } else {
-        if (current.getPrevious() != null) {
-            LeafNode currentPrev = current.getPrevious();
+        if (underUtilizedInternal.getPrevious() != null) {
+            LeafNode currentPrev = underUtilizedInternal.getPrevious();
             if (currentPrev != null && currentPrev.getPrevious() != null) {
-                currentPrev.getPrevious().setPrevious(current.getPrevious());
+                currentPrev.getPrevious().setPrevious(underUtilizedInternal.getPrevious());
             }
         }
 
-        if (current.getNext() != null) {
-            nodeToMergeTo.setNext(current.getNext());
-            current.getNext().setPrevious(nodeToMergeTo);
+        if (underUtilizedInternal.getNext() != null) {
+            prevInternal.setNext(underUtilizedInternal.getNext());
+            underUtilizedInternal.getNext().setPrevious(prevInternal);
         }
 
-        if (current.getKeySize() == 0) {
-            NonLeafNode currParent = current.getParent();
-            currParent.removeChild(current);
+        if (underUtilizedInternal.getKeySize() == 0) {
+            NonLeafNode currParent = underUtilizedInternal.getParent();
+            currParent.removeChild(underUtilizedInternal);
 
             if (inBetweenKeyIdx < 0) {
                 currParent.removeKeyAt(inBetweenKeyIdx + 1);
@@ -409,11 +409,11 @@ private void mergeLeafNodes(LeafNode nodeToMergeTo, LeafNode current, NonLeafNod
                 currParent.removeKeyAt(0);
             }
         } else {
-            NonLeafNode currParent = current.getNext().getParent();
-            currParent.removeChild(current);
+            NonLeafNode currParent = underUtilizedInternal.getNext().getParent();
+            currParent.removeChild(underUtilizedInternal);
 
             if (currParent.getKeySize() > currParent.getNonLeafSize()
-                    && currParent.getChildren().size() > current.getNonLeafSize()) {
+                    && currParent.getChildren().size() > underUtilizedInternal.getNonLeafSize()) {
                 currParent.removeKeyAt(0);
             }
         }
@@ -422,15 +422,15 @@ private void mergeLeafNodes(LeafNode nodeToMergeTo, LeafNode current, NonLeafNod
     int lowerBound = checkForLowerbound(removedKey);
     int newLowerBound;
 
-    if (current.getParent().getKeySize() >= numberOfChildren) {
+    if (underUtilizedInternal.getParent().getKeySize() >= numberOfChildren) {
         newLowerBound = lowerBound;
     } else {
-        newLowerBound = current.getParent().getChild(0).getFirstKey();
+        newLowerBound = underUtilizedInternal.getParent().getChild(0).getFirstKey();
 
         if (inBetweenKeyIdx == 0) {
             // inBetweenKeyIdx is 0
         } else {
-            current.getParent().updateKey(inBetweenKeyIdx - 1, newLowerBound, true, newLowerBound);
+            underUtilizedInternal.getParent().updateKey(inBetweenKeyIdx - 1, newLowerBound, true, newLowerBound);
         }
     }
 }
@@ -445,7 +445,7 @@ private void moveOneKey(LeafNode giver, LeafNode receiver, boolean giverOnLeft, 
         giver.removeKeyInMap(giverKey);
 
         receiver.insertKeyAt(0, giverKey);
-        giver.removeLastKey();
+        giver.removeKeyAtLast();
         key = receiver.getKeyAt(0);
     } else {
         int giverKey = giver.getFirstKey();
