@@ -7,19 +7,16 @@ public class Disk {
     private Block[] blocks;
 
     private int recordCount = 0;
-    private int diskSize;
-    private int blockSize;
     
     private boolean[] availableBlocks;
     private boolean[] filledBlocks;
 
     public Disk(int diskSize, int blockSize) {
-        this.diskSize = diskSize;
-        this.blockSize = blockSize;
+        
         this.blocks = new Block[diskSize / blockSize];
         this.availableBlocks = new boolean[diskSize / blockSize];
         this.filledBlocks = new boolean[diskSize / blockSize];
-        // initialise all available blocks in hashMap
+  
         for (int i = 0; i < blocks.length; i++) {
             blocks[i] = new Block(blockSize);
             availableBlocks[i] = true;
@@ -30,7 +27,7 @@ public class Disk {
 
     public Address writeRecordToStorage(Record r){
         recordCount++;
-        int blockPtr = getFirstAvailableBlockID();
+        int blockPtr = getFirstAvailableBlockId();
         Address addressofRecordStored = this.insertRecordIntoBlock(blockPtr, r);
         return addressofRecordStored;
     }
@@ -52,35 +49,27 @@ public class Disk {
         if(blockPtr == -1){
             return null;
         }
-        int addr = blocks[blockPtr].insertRecordIntoBlocks(r);
+        int addr = blocks[blockPtr].insertRecord(r);
         filledBlocks[addr] = true;
-        if(!blocks[blockPtr.isBlockAvailable()]){
+        if(!blocks[blockPtr].isBlockAvailable()){
             availableBlocks[blockPtr] = false;
         }
         return new Address(blockPtr, addr);
     }
     
-    public int getNumberBlockUsed() {
-        int usedBlocks;
+    public int getNoOfFilledBlocks() {
+        int count = 0;
+
         for(int i = 0; i < filledBlocks.length; i++){
-            if(filledBlocks[i] = true)
-                usedBlocks++;
+            if(filledBlocks[i] = true){
+                count++;
+            }
         }
-        return usedBlocks;
+        return count;
     }
 
     private Block getBlock(int blockNumber) {
-        Block block = lruCache.get(blockNumber);
-        if (block != null) {
-            //blockAccessReduced++;
-        }
-        if (block == null && blockNumber >= 0) {
-            // 1 I/O
-            block = blocks[blockNumber];
-            //blockAccesses++;
-            lruCache.put(blockNumber, block);
-        }
-        return block;
+        return blocks[blockNumber];
     }
 
     public Record getRecord(Address addr) {
@@ -100,11 +89,11 @@ public class Disk {
         for (int i = 0; i < filledBlocks.length; i++) {
             if(filledBlocks[i] = true){
                 countBlockAccess++;
-                Block block = blocks[blockPtr];
+                Block block = blocks[i];
                 int numberOfRecordsInBlock = block.getCurSize();
                 for (int j = 0; j < numberOfRecordsInBlock; j++) {
                     // retrieve the record
-                    r = block.getRecordFromBlock(j);
+                    r = block.getRecord(j);
                     curNumVotes = r.getNumVotes();
                     if (numVotesValue <= curNumVotes && curNumVotes <= numVotesValueUpperRange) {
                         foundRecords.add(r);
@@ -120,4 +109,25 @@ public class Disk {
         return countBlockAccess;
     }
 
+    public void deleteRecord(ArrayList<Address> addList) {
+        for (Address add : addList) {
+            int blockId = add.getBlockId();
+            int position = add.getPosition();
+            Block block = getBlock(blockId);
+            block.deleteRecord(position);
+            if (filledBlocks[blockId] == true) {
+                filledBlocks[blockId] = false;
+            }
+            availableBlocks[blockId] = true;
+        }
+    }
+
+
+    public void experimentOne() {
+        System.out.println("\n----------------------EXPERIMENT 1-----------------------");
+        System.out.printf("Total Number of Records Stored: %d\n", this.getNumberOfRecords());
+        System.out.println(String.format("Size of Each Record: %d Bytes", Record.size()));
+        System.out.printf("Number of Records Stored in a Block: %d\n", Block.getTotalRecords());
+        System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNoOfFilledBlocks()));
+    }
 }
