@@ -77,16 +77,16 @@ public class Parser {
                         database.experimentOne();
                         break;
                     case 2:
-                        BplusTree.experimentTwo(bplusTree);
+                        BpTree.experimentTwo(bplusTree);
                         break;
                     case 3:
-                        BplusTree.experimentThree(database, bplusTree);
+                        BpTree.experimentThree(database, bplusTree);
                         break;
                     case 4:
-                        BplusTree.experimentFour(database, bplusTree);
+                        BpTree.experimentFour(database, bplusTree);
                         break;
                     case 5:
-                        BplusTree.experimentFive(database, bplusTree);
+                        BpTree.experimentFive(database, bplusTree);
                         break;
                 }
 
