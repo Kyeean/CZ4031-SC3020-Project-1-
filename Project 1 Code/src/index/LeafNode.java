@@ -17,17 +17,12 @@ public class LeafNode extends Node {
 
     public LeafNode() {
         super();
-        setIsLeaf(true);
+        setLeaf(true);
         setNext(null);
         setPrevious(null);
     }
 
-    /**
-     * Find records associated with the key.
-     *
-     * @param key the key of the records.
-     * @return ArrayList<Address> the list of existing records.
-     */
+    /* Find records associated with the key. */
     public ArrayList<Address> findRecords(int key) {
         if (recordMap.containsKey(key) || this.keys.contains(key)) {
             return recordMap.get(key);
@@ -35,24 +30,14 @@ public class LeafNode extends Node {
         return null;
     }
 
-    /**
-     * Get Addresses for a given key.
-     *
-     * @param key the key of the addresses.
-     * @return ArrayList<Address> the addresses.
-     */
+    /* Get Addresses for a given key. */
     public ArrayList<Address> getAddressesForKey(int key) {
         return recordMap.get(key);
     }
 
-    /**
-     * Add a record with the given key and address object.
-     *
-     * @param key the key to be added.
-     * @param add the address object to be added.
-     */
+    /* Add a record with the given key and address object. */
     public void addRecord(int key, Address add) {
-        int n = Node_Size;
+        int n = NODE_SIZE;
 
         if (this.keys == null) {
             initializeNodeWithRecord(key, add);

@@ -2,24 +2,24 @@ package index;
 
 public class PerformanceRecorder {
 
-    private int totalNodes;
-    private int treeDegree;
-    private int totalNodeReads;
-    private int totalRangeNodeReads;
+    private static int totalNodes;
+    private static int treeDegree;
+    private static int totalNodeReads;
+    private static int totalRangeNodeReads;
 
     public int getTotalNodes() {
         return totalNodes;
     }
-    public void addOneNode() {
+    public static void addOneNode() {
         totalNodes++;
     }
     public int getTreeDegree() {
         return treeDegree;
     }
-    public void addOneTreeDegree() {
+    public static void addOneTreeDegree() {
         treeDegree++;
     }
-    public void deleteOneTreeDegree() {
+    public static void deleteOneTreeDegree() {
         treeDegree--;
     }
 
@@ -27,14 +27,14 @@ public class PerformanceRecorder {
         return totalNodeReads;
     }
 
-    public void addOneNodeReads() {
+    public static void addOneNodeReads() {
         totalNodeReads++;
     }
 
     public int getRangeNodeReads() {
         return totalRangeNodeReads;
     }
-    public void addOneRangeNodeReads() {
+    public static void addOneRangeNodeReads() {
         totalRangeNodeReads++;
         addOneNodeReads();
     }

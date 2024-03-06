@@ -6,7 +6,7 @@ import java.util.List;
 import storage.Address;
 import storage.Disk;
 import storage.Record;
-import utils.Parser;
+//import utils.Parser;
 
 public class BpTree {
 
@@ -21,8 +21,8 @@ public class BpTree {
     public LeafNode createFirstNode() {
         LeafNode newNode = new LeafNode();
         PerformanceRecorder.addOneNode();
-        newNode.setIsRoot(true);
-        newNode.setIsLeaf(true);
+        newNode.setRoot(true);
+        newNode.setLeaf(true);
         setRoot(newNode);
         return newNode;
     }
@@ -35,7 +35,7 @@ public class BpTree {
 
     public static void setRoot(Node root) {
         rootNode = root;
-        rootNode.setIsRoot(true);
+        rootNode.setRoot(true);
     }
 
     public static Node getRoot() {
@@ -412,8 +412,8 @@ private void mergeLeafNodes(LeafNode nodeToMergeTo, LeafNode current, NonLeafNod
             NonLeafNode currParent = current.getNext().getParent();
             currParent.removeChild(current);
 
-            if (currParent.getKeySize() > currParent.getMinNonLeafNodeSize()
-                    && currParent.getChildren().size() > current.getMinNonLeafNodeSize()) {
+            if (currParent.getKeySize() > currParent.getNonLeafSize()
+                    && currParent.getChildren().size() > current.getNonLeafSize()) {
                 currParent.removeKeyAt(0);
             }
         }
