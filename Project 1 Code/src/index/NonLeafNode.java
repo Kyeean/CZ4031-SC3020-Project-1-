@@ -1,5 +1,5 @@
 package index;
 
-public class NonLeafNode {
+public class NonLeafNode extends Node {
     
 }

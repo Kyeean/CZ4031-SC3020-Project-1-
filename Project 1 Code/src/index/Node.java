@@ -6,13 +6,13 @@ import java.util.TreeMap;
 /* 
  * This class represents a node in a B+ Tree 
 */
-public class Node{
+public class Node {
     private boolean isLeaf; /*Check if node is a leaf node*/
     private boolean isRoot; /*Check if node is a root node*/
-    private int nodeSize;
-    private int minNonLeafNodeSize;
-    private int minLeafNodeSize;
-    static final int Node_Size = BpTree.Node_Size;
+    private int nodeSize; /*Node size*/
+    private int NonLeafSize; /*minimum size of non leaf node*/
+    private int LeafNodeSize; /*minimum size of leaf node*/
+    static final int NODE_SIZE = BpTree.NODE_SIZE;
     private NonLeafNode parent;
     protected ArrayList<Integer> keys;
     Node rootNode;
@@ -22,17 +22,17 @@ public class Node{
         this.rootNode = BpTree.getRoot();
         this.isLeaf = false;
         this.isRoot = false;
-        this.nodeSize = Node_Size;
-        this.minLeafNodeSize = (int) (Math.floor((nodeSize + 1) / 2));
-        this.minNonLeafNodeSize = (int) (Math.floor(nodeSize / 2));
+        this.nodeSize = NODE_SIZE;
+        this.LeafNodeSize = (int) (Math.floor((nodeSize + 1) / 2));
+        this.NonLeafSize = (int) (Math.floor(nodeSize / 2));
     }
 
-    public int getMinLeafNodeSize(){
-        return this.minLeafNodeSize;
+    public int getLeafNodeSize(){
+        return this.LeafNodeSize;
     }
 
-    public int getMinNonLeafNodeSize(){
-        return this.minNonLeafNodeSize;
+    public int getNonLeafSize(){
+        return this.NonLeafSize;
     }
 
     public boolean isLeaf(){
@@ -51,23 +51,23 @@ public class Node{
         return isRoot;
     }
     
-    public void setIsRoot(boolean isARoot){
+    public void setRoot(boolean isARoot){
         isRoot = isARoot;
     }
-    
+
     public NonLeafNode getParent(){
         return this.parent;
     }
 
     public void setParent(NonLeafNode setParent){
         if(this.isRoot()){
-            this.setIsRoot(false);
-            setParent.setIsRoot(true);
-            setParent.setIsLeaf(false);
+            this.setRoot(false);
+            setParent.setRoot(true);
+            setParent.setLeaf(false);
             BpTree.setRoot(setParent);
         }
         else{
-            setParent.setIsLeaf(false);
+            setParent.setLeaf(false);
         }
         this.parent.setParent;
     }

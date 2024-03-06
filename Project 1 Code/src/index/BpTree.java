@@ -10,7 +10,7 @@ import utils.Parser;
 
 public class BpTree {
 
-    private static final int Node_Size = (Parser.BLOCK_SIZE - Parser.OVERHEAD) / (Parser.POINTER_SIZE + Parser.KEY_SIZE);
+    static final int NODE_SIZE = (Parser.BLOCK_SIZE - Parser.OVERHEAD) / (Parser.POINTER_SIZE + Parser.KEY_SIZE);
     private static Node rootNode;
     private Node nodeToInsertTo;
 
@@ -143,7 +143,7 @@ public ArrayList<Address> deleteNode(Node node, NonLeafNode parent, int parentPo
         addOfRecToDelete = deleteNode(next, nonLeafNode, ptrIdx, keyIdx, key, lowerbound);
     }
 
-    if (node.isUnderUtilized(Node_Size)) {
+    if (node.isUnderUtilized(NODE_SIZE)) {
         handleInvalidTree(node, parent, parentPointerIndex, parentKeyIndex);
     }
 
@@ -198,15 +198,15 @@ private void handleInvalidLeaf(Node underUtilizedNode, NonLeafNode parent, int p
         numChildrenOfNodeParent = underUtilizedNode.getParent().getChildren().size();
     }
 
-    if (nextNode != null && nextNode.isAbleToGiveOneKey(Node_Size)) {
+    if (nextNode != null && nextNode.isAbleToGiveOneKey(NODE_SIZE)) {
         moveOneKey(nextNode, underUtilizedLeaf, false, parent, parentKeyIndex + 1);
-    } else if (prevNode != null && prevNode.isAbleToGiveOneKey(Node_Size)) {
+    } else if (prevNode != null && prevNode.isAbleToGiveOneKey(NODE_SIZE)) {
         moveOneKey(prevNode, underUtilizedLeaf, true, parent, parentKeyIndex);
     }
-    else if ((prevNode != null && (prevNode.getKeySize() + underUtilizedLeaf.getKeySize()) <= Node_Size
+    else if ((prevNode != null && (prevNode.getKeySize() + underUtilizedLeaf.getKeySize()) <= NODE_SIZE
             && (numChildrenOfNodeParent >= underUtilizedNode.getParent().getMinNonLeafNodeSize()))) {
         mergeLeafNodes(prevNode, underUtilizedLeaf, parent, parentPointerIndex, parentKeyIndex, false);
-    } else if (nextNode != null && (nextNode.getKeySize() + underUtilizedLeaf.getKeySize()) <= Node_Size
+    } else if (nextNode != null && (nextNode.getKeySize() + underUtilizedLeaf.getKeySize()) <= NODE_SIZE
             && (numChildrenOfNextParent >= underUtilizedNode.getParent().getMinNonLeafNodeSize())) {
         mergeLeafNodes(underUtilizedLeaf, nextNode, parent, parentPointerIndex + 1, parentKeyIndex + 1, true);
     } else {
@@ -240,23 +240,23 @@ private void handleInvalidInternal(Node underUtilizedNode,
     if (nextInternal == null && prevInternal == null)
         throw new IllegalStateException("Both prevInternal and nextInternal are null for " + underUtilizedNode);
 
-    if (prevInternal != null && prevInternal.isAbleToGiveOneKey(Node_Size)) {
+    if (prevInternal != null && prevInternal.isAbleToGiveOneKey(NODE_SIZE)) {
         // Move one key from the left non-leaf node
         moveOneKeyNonLeafNode(prevInternal, (NonLeafNode) underUtilizedInternal, true, parent, parentKeyIndex);
-    } else if (nextInternal != null && nextInternal.isAbleToGiveOneKey(Node_Size)) {
+    } else if (nextInternal != null && nextInternal.isAbleToGiveOneKey(NODE_SIZE)) {
         // Move one key from the right non-leaf node
         moveOneKeyNonLeafNode(nextInternal, (NonLeafNode) underUtilizedInternal, false, parent, parentKeyIndex + 1);
     }
     // Now, check if we can merge with the left node
     else if (prevInternal != null &&
-            (underUtilizedInternal.getKeySize() + prevInternal.getKeySize()) <= Node_SIze) {
+            (underUtilizedInternal.getKeySize() + prevInternal.getKeySize()) <= NODE_SIZE) {
         // Merge with the left Non-Leaf node
         mergeNonLeafNodes(prevInternal, (NonLeafNode) underUtilizedInternal, parent,
                 parentPointerIndex, parentKeyIndex, true);
     }
     // Check if we can merge with the right node
     else if (nextInternal != null &&
-            (underUtilizedInternal.getKeySize() + nextInternal.getKeySize()) <= Node_Size) {
+            (underUtilizedInternal.getKeySize() + nextInternal.getKeySize()) <= NODE_SIZE) {
         // Merge with the right Non-Leaf Node
         mergeNonLeafNodes((NonLeafNode) underUtilizedInternal, nextInternal, parent,
                 parentPointerIndex + 1, parentKeyIndex + 1, false);
