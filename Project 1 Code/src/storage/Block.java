@@ -7,8 +7,8 @@ public class Block {
 
     public Block(int BLOCK_SIZE) {
         this.currentRecords = 0;
-        this.totalRecords = BLOCK_SIZE / Record.size();
-        this.records = new Record[this.totalRecords];
+        Block.totalRecords = BLOCK_SIZE / Record.size();
+        this.records = new Record[Block.totalRecords];
     }
 
     public boolean isBlockAvailable() {
