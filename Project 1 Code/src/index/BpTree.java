@@ -226,18 +226,7 @@ public class BpTree {
             throw new IllegalStateException("state is wrong!");
         }
     }
-
-    /**
-     * Handles the case when the root node of the b plus search tree is
-     * underutilized and needs to be rebalanced.
-     * If the root node is a leaf node, all keys are removed from the leaf node. ->
-     * Empty Tree
-     * If the root node is a non-leaf node, the first child of the root node becomes
-     * the new root node.
-     *
-     * @param underUtilizedNode the root node that is underutilized and needs to be
-     *                          rebalanced
-     */
+    /* Function to handle Nodes which are not balanced */
     public void handleInvalidRoot(Node underUtilizedNode) {
         if (underUtilizedNode.isLeaf()) { // Only node in B+ Tree - Root
             ((LeafNode) underUtilizedNode).clear();
@@ -249,25 +238,7 @@ public class BpTree {
         }
     }
 
-    /**
-     * Handles the case when a leaf node in the b plus tree is underutilized and
-     * needs to be rebalanced.
-     * Checks if it can redistribute with the next sibling node, then with the
-     * previous sibling node, and if neither are possible, merges the two nodes.
-     * If the merging results in the parent node being underutilized, the
-     * {@link #handleInvalidTree(Node, NonLeafNode, int, int)} method is called
-     * recursively.
-     *
-     * @param underUtilizedNode  the leaf node that is underutilized and needs to be
-     *                           rebalanced
-     * @param parent             the parent node of the underutilized node
-     * @param parentPointerIndex the index of the pointer to the underutilized node
-     *                           in the parent node
-     * @param parentKeyIndex     the index of the key in the parent node that points
-     *                           to the underutilized node
-     * @throws IllegalStateException if both previous and next sibling nodes are
-     *                               null, or if the state of the tree is incorrect
-     */
+    /* Function to handle unbalanced Leaf Nodes  */
     private void handleInvalidLeaf(Node underUtilizedNode,
             NonLeafNode parent,
             int parentPointerIndex,
@@ -290,26 +261,16 @@ public class BpTree {
         if (underUtilizedNode.getParent() != null) {
             numChildrenOfNodeParent = underUtilizedNode.getParent().getChildren().size();
         }
-
         if (nextNode != null && nextNode.isAbleToGiveOneKey(NODE_SIZE)) {
-            // Move one key from right to left
-            // handle invalid leaf: leaf to right
             moveOneKey(nextNode, underUtilizedLeaf, false, parent, parentKeyIndex + 1);
         } else if (prevNode != null && prevNode.isAbleToGiveOneKey(NODE_SIZE)) {
-            // Move one key from left to righ
-            // handle invalid leaf: right to left
             moveOneKey(prevNode, underUtilizedLeaf, true, parent, parentKeyIndex);
         }
-        // we can't redistribute, try merging with next
         else if ((prevNode != null && (prevNode.getKeySize() + underUtilizedLeaf.getKeySize()) <= NODE_SIZE
                 && (numChildrenOfNodeParent >= underUtilizedNode.getParent().getLeafNodeSize()))) {
-            // it's the case where split node is in the left from parent
-            // merge with left node
             mergeLeafNodes(prevNode, underUtilizedLeaf, parent, parentPointerIndex, parentKeyIndex, false);
         } else if (nextNode != null && (nextNode.getKeySize() + underUtilizedLeaf.getKeySize()) <= NODE_SIZE
                 && (numChildrenOfNextParent >= underUtilizedNode.getParent().getLeafNodeSize())) {
-            // it's the case where under utilized node is the left node from parent
-            // merge with right node
             mergeLeafNodes(underUtilizedLeaf, nextNode, parent, parentPointerIndex + 1, parentKeyIndex + 1, true);
         } else {
             throw new IllegalStateException("Can't have both leaf " +
@@ -317,23 +278,7 @@ public class BpTree {
                     "common parent");
         }
     }
-
-    /**
-     * Handles an invalid internal node by either redistributing keys with adjacent
-     * nodes
-     * or merging it with adjacent nodes.
-     *
-     * @param underUtilizedNode  the internal node that is underutilized and needs
-     *                           to be handled
-     * @param parent             the parent node of the underutilized node
-     * @param parentPointerIndex the index of the pointer to the underutilized node
-     *                           in the parent node's child list
-     * @param parentKeyIndex     the index of the key in the parent node that points
-     *                           to the underutilized node
-     * @throws IllegalStateException if both prevInternal and nextInternal are null
-     *                               or if the underutilized node cannot be
-     *                               redistributed or merged with adjacent nodes
-     */
+    /* Handle internal node redistribution or merging */
     private void handleInvalidInternal(Node underUtilizedNode,
             NonLeafNode parent,
             int parentPointerIndex,

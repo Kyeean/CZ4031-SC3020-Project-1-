@@ -10,14 +10,15 @@ public class Disk {
     private int recordCount = 0;
     private int blockAccessReduced = 0;
     private static int blockAccesses = 0;
-    
+    private int blockSize, diskSize;
 //    private boolean[] availableBlocks;
 //    private boolean[] filledBlocks;
     private Set<Integer> occupiedBlocks;
     private Set<Integer> freeBlocks;
 
     public Disk(int diskSize, int blockSize) {
-        
+        this.blockSize = blockSize;
+        this.diskSize = diskSize;
         this.blocks = new Block[diskSize / blockSize];
 //        this.availableBlocks = new boolean[diskSize / blockSize];
         this.freeBlocks = new HashSet<>();
@@ -179,6 +180,18 @@ public class Disk {
         return blockAccessReduced;
     }
     
+    public void printRecordsinBlock(){
+
+        for(int k = 0; k < 10; k++){
+            Block b = getBlock(k);
+            System.out.println(diskSize/blockSize + "\n");
+            for(int i = 0; i < 7 ; i++){
+                Record r = b.getRecord(i);
+                System.out.printf(r.toString() + "\n");
+            }
+        }       
+    }
+
     public void experimentOne() {
         System.out.println("\nEXPERIMENT 1: ");
         System.out.printf("Number of Records Stored: %d\n", this.getNumberOfRecords());
