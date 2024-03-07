@@ -116,41 +116,17 @@ public class LeafNode extends Node {
         return prevNode;
     }
 
-    /**
-     * Clear the keys ArrayList and records ArrayList of the current leaf node.
-     */
+    /* Empty keys and records in current leaf node */
     public void clear() {
         keys.clear();
         records.clear();
     }
 
-    /**
-     * Insert the given key and addresses into the recordMap.
-     *
-     * @param key the key to be inserted.
-     * @param add the addresses to be inserted into the recordMap.
-     */
     public void insertByRedistribution(int key, ArrayList<Address> add) {
         map.put(key, add);
     }
-
-    /**
-     * Remove the given key from the recordMap.
-     *
-     * @param key the key to be removed.
-     */
+    /* Remove a specificed key */
     public void removeKeyInMap(int key) {
         map.remove(key);
-    }
-
-    /**
-     * Get a formatted string representation of the recordMap, records ArrayList, and the nextNode.
-     *
-     * @return A formatted string representation.
-     */
-    @Override
-    public String toString() {
-        return String.format("\n--------LEAF NODE CONTAINS: map %s records %s, nextNode ------------\n",
-                map.toString(), records, nextNode);
     }
 }
