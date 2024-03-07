@@ -125,31 +125,15 @@ public class BpTree {
     }
 
 
-    /* Deletion of Node & find lower bound using findLowerBound */
+    /* Deletion of Key & find lower bound using findLowerBound */
     public ArrayList<Address> deleteKey(int key) {
         int lowerbound = 0;
         lowerbound = findLowerBound(key);
         return (deleteNode(rootNode, null, -1, -1, key, lowerbound));
     }
 
-    /**
-     * Recursive function that deletes a key from the b plus tree with the specified
-     * key value, starting from the given node.
-     * Calls a check for invalid tree after deleting key
-     *
-     * @param node               the node from which to begin the search for the
-     *                           node to be deleted
-     * @param parent             the parent node of the current node
-     * @param parentPointerIndex an integer representing the index of the pointer to
-     *                           the current node in the parent node
-     * @param parentKeyIndex     an integer representing the index of the key in the
-     *                           parent node that points to the current node
-     * @param key                the key value of the node to be deleted
-     * @param lowerbound         the lower bound of the subtree containing the node
-     *                           to be deleted
-     * @return an ArrayList of Address objects representing the deleted node(s), or
-     *         an empty list if no nodes were deleted.
-     */
+ 
+    /* Function to delete Node with a key value */
     public ArrayList<Address> deleteNode(Node node, NonLeafNode parent, int parentPointerIndex, int parentKeyIndex,
             int key, int lowerbound) {
         ArrayList<Address> addOfRecToDelete = new ArrayList<>();
