@@ -61,7 +61,7 @@ public class Parser {
                         Scanner sc = new Scanner(System.in);
                         index = sc.nextInt();
 
-                        if (index > 0 && index < 7) {
+                        if (index > 0 && index < 6) {
                             break;
                         } else {
                             System.out.println("\nInvalid input. (Only input 1-5)");
@@ -87,9 +87,6 @@ public class Parser {
                         break;
                     case 5:
                         BpTree.experimentFive(database, bplusTree);
-                        break;
-                    case 6: 
-                        database.printRecordsinBlock();
                         break;
                 }
 

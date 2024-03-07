@@ -10,15 +10,15 @@ public class Disk {
     private int recordCount = 0;
     private int blockAccessReduced = 0;
     private static int blockAccesses = 0;
-    private int blockSize, diskSize;
+    // private int blockSize, diskSize;
 //    private boolean[] availableBlocks;
 //    private boolean[] filledBlocks;
     private Set<Integer> occupiedBlocks;
     private Set<Integer> freeBlocks;
 
     public Disk(int diskSize, int blockSize) {
-        this.blockSize = blockSize;
-        this.diskSize = diskSize;
+        // this.blockSize = blockSize;
+        // this.diskSize = diskSize;
         this.blocks = new Block[diskSize / blockSize];
 //        this.availableBlocks = new boolean[diskSize / blockSize];
         this.freeBlocks = new HashSet<>();
@@ -88,6 +88,7 @@ public class Disk {
     }
 
     private Block getBlock(int blockNumber) {
+        blockAccesses++;
         return blocks[blockNumber];
     }
 
@@ -149,7 +150,7 @@ public class Disk {
             System.out.printf("Value in range [%d, %d] not found int database!\n",numVotesValue, numVotesValueUpperRange);
         }
         for (Record record : finalRes)
-            System.out.printf("(Brute Force) %s\n", record);
+            System.out.printf("Found Records (Brute Force) %s\n", record);
         return countBlockAccess;
     }
     
@@ -180,23 +181,21 @@ public class Disk {
         return blockAccessReduced;
     }
     
-    public void printRecordsinBlock(){
+    // public void printRecordsinBlock(int blockPtr){
 
-        for(int k = 0; k < 10; k++){
-            Block b = getBlock(k);
-            System.out.println(diskSize/blockSize + "\n");
-            for(int i = 0; i < 7 ; i++){
-                Record r = b.getRecord(i);
-                System.out.printf(r.toString() + "\n");
-            }
-        }       
-    }
+    //         Block b = getBlock(blockPtr);
+    //         for(int i = 0; i < 7 ; i++){
+    //             Record r = b.getRecord(i);
+    //             System.out.printf(r.toString() + "\n");
+    //         }
+
+    // }
 
     public void experimentOne() {
-        System.out.println("\nEXPERIMENT 1: ");
-        System.out.printf("Number of Records Stored: %d\n", this.getNumberOfRecords());
-        System.out.println(String.format("Size of a Record: %d Bytes", Record.size()));
-        System.out.printf("Number of Records in a Block: %d\n", Block.getTotalRecords());
-        System.out.println(String.format("Number of Blocks used: %d\n", this.getNoOfOccupiedBlocks()));
+        System.out.println("\n----------------------EXPERIMENT 1-----------------------");
+        System.out.printf("Total Number of Records Stored: %d\n", this.getNumberOfRecords());
+        System.out.println(String.format("Size of Each Record: %d Bytes", Record.size()));
+        System.out.printf("Number of Records Stored in a Block: %d\n", Block.getTotalRecords());
+        System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNoOfOccupiedBlocks()));
     }
 }
