@@ -75,13 +75,6 @@ public class LeafNode extends Node {
         insertInOrder(this.keys, key);
     }
 
-    /**
-     * Find a node with the given key in the B+ tree.
-     *
-     * @param key      the key to find.
-     * @param rootNode the starting node.
-     * @return the found node with the key.
-     */
     public Node findNodeByKey(int key, Node rootNode) {
         if (rootNode == null) {
             return null;
@@ -95,12 +88,7 @@ public class LeafNode extends Node {
         return null;
     }
 
-    /**
-     * Insert the given key into the keys ArrayList in correct ascending order.
-     *
-     * @param keys the ArrayList<Integer> keys to insert into.
-     * @param key  the key to be inserted.
-     */
+    /* Insert key into arraylist in ascending order */
     public static void insertInOrder(ArrayList<Integer> keys, int key) {
         int i = 0;
         while (i < keys.size() && keys.get(i) < key) {
@@ -109,38 +97,21 @@ public class LeafNode extends Node {
         keys.add(i, key);
     }
 
-    /**
-     * Set the nextNode with the given sibling.
-     *
-     * @param sibling the leaf node that is set as the nextNode for the current node.
-     */
+    /* set next node as sibling node */
     public void setNext(LeafNode sibling) {
         nextNode = sibling;
     }
-
-    /**
-     * Get the nextNode.
-     *
-     * @return nextNode, the leaf node that is on the right of the current node.
-     */
+    /* get next node */
     public LeafNode getNext() {
         return nextNode;
     }
 
-    /**
-     * Set the prevNode with the given prev.
-     *
-     * @param prev the leaf node that is set as the prevNode for the current Node.
-     */
+    /* set prevNode with previous node */
     public void setPrevious(LeafNode prev) {
         prevNode = prev;
     }
 
-    /**
-     * Get the prevNode.
-     *
-     * @return prevNode, the leaf node that is on the left of the current node.
-     */
+    /* Get the prevNode. */
     public LeafNode getPrevious() {
         return prevNode;
     }
