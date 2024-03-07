@@ -281,11 +281,11 @@ public LeafNode leafSplitAndDistribute(int key, Address addr) {
     this.keys.subList(n, this.keys.size()).clear();
 
     if (((LeafNode) this).getNext() != null) {
-        newNode.setRight(((LeafNode) this).getNext());
-        ((LeafNode) this).getNext().setLeft(newNode);
+        newNode.setNext(((LeafNode) this).getNext());
+        ((LeafNode) this).getNext().setPrevious(newNode);
     }
-    ((LeafNode) this).setRight(newNode);
-    newNode.setLeft(((LeafNode) this));
+    ((LeafNode) this).setNext(newNode);
+    newNode.setPrevious(((LeafNode) this));
     return newNode;
 }
 

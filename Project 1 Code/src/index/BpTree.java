@@ -231,7 +231,7 @@ public class BpTree {
             }
         }
 
-        LeafNode prevNode = (LeafNode) underUtilizedLeaf.getLeft();
+        LeafNode prevNode = (LeafNode) underUtilizedLeaf.getPrevious();
 
         if (underUtilizedNode.getParent() != null) {
             numChildrenOfNodeParent = underUtilizedNode.getParent().getChildren().size();
@@ -427,10 +427,10 @@ public class BpTree {
         if (mergetoright == true) {
             if (current.getNext() != null) {
                 LeafNode currentNext = current.getNext();
-                currentNext.setLeft(current.getLeft());
+                currentNext.setPrevious(current.getPrevious());
             }
 
-            nodeToMergeTo.setRight(current.getNext());
+            nodeToMergeTo.setNext(current.getNext());
             if (current.getKeySize() == 0) {
 
                 NonLeafNode currParent = current.getParent();
@@ -439,17 +439,17 @@ public class BpTree {
             }
         } else {
 
-            if (current.getLeft() != null) {
-                LeafNode currentPrev = current.getLeft();
-                if (currentPrev != null && (currentPrev.getLeft() != null)) {
-                    currentPrev.getLeft().setLeft(current.getLeft());
+            if (current.getPrevious() != null) {
+                LeafNode currentPrev = current.getPrevious();
+                if (currentPrev != null && (currentPrev.getPrevious() != null)) {
+                    currentPrev.getPrevious().setPrevious(current.getPrevious());
                 }
 
             }
 
             if (current.getNext() != null) {
-                nodeToMergeTo.setRight(current.getNext());
-                current.getNext().setLeft(nodeToMergeTo);
+                nodeToMergeTo.setNext(current.getNext());
+                current.getNext().setPrevious(nodeToMergeTo);
             }
             if (current.getKeySize() == 0) {
 
