@@ -9,7 +9,6 @@ import util.Parser;
 
 /* BPlus Tree Class */
 public class BpTree {
-
     static final int NODE_SIZE = (Parser.BLOCK_SIZE - Parser.OVERHEAD)/(Parser.POINTER_SIZE+Parser.KEY_SIZE);
     static Node rootNode;
     Node insertNode;
@@ -152,8 +151,7 @@ public class BpTree {
             LeafNode LeafNode = (LeafNode) node;
             int newLowerBound = 0;
 
-            // Get newLowerBound (possible for current key taken to be the lowerbound) if
-            // KeyIdx is not KeySize
+            // Get newLowerBound (possible for current key taken to be the lowerbound)
             if (LeafNode.getKeySize() >= (keyIdx + 1)) {
                 newLowerBound = lowerbound;
                 List<Integer> keys = LeafNode.getKeys();
