@@ -12,19 +12,19 @@ public class BpTree {
 
     static final int NODE_SIZE = (Parser.BLOCK_SIZE - Parser.OVERHEAD)/(Parser.POINTER_SIZE+Parser.KEY_SIZE);
     static Node rootNode;
-    Node nodeToInsertTo;
+    Node insertNode;
     // Initial Node creation
     public BpTree() {
         rootNode = InitialNode();
     }
     // First Node in the Bp Tree
     public LeafNode InitialNode() {
-        LeafNode newNode = new LeafNode();
+        LeafNode firstNode = new LeafNode();
         PerformanceRecorder.addOneNode();
-        newNode.setRoot(true);
-        newNode.setLeaf(true);
-        setRoot(newNode);
-        return newNode;
+        firstNode.setRoot(true);
+        firstNode.setLeaf(true);
+        setRoot(firstNode);
+        return firstNode;
     }
 
     // Creation of Nodes
@@ -47,44 +47,38 @@ public class BpTree {
     /* Function to search for a Node */
     public LeafNode searchNode(int key) {
         ArrayList<Integer> keys;
-        // If root is a leaf node
         if (BpTree.rootNode.isLeaf()) {
             setRoot(rootNode);
             return (LeafNode) rootNode;
         }
-        //not a leaf node
         else {
-            Node nodeToInsertTo = (NonLeafNode) getRoot();
-            //traverse tree until a leaf node
-            while (!((NonLeafNode) nodeToInsertTo).getChild(0).isLeaf()) {
-                keys = nodeToInsertTo.getKeys();
-                // loop through keys in current node
+            Node insertNode = (NonLeafNode) getRoot();
+            while (!((NonLeafNode) insertNode).getChild(0).isLeaf()) {
+                keys = insertNode.getKeys();
                 for (int i = keys.size() - 1; i >= 0; i--) {
-                    // key is smaller or equal to key in node
-                    if (nodeToInsertTo.getKey(i) <= key) {
-                        nodeToInsertTo = ((NonLeafNode) nodeToInsertTo).getChild(i + 1);
+                    if (insertNode.getKey(i) <= key) {
+                        insertNode = ((NonLeafNode) insertNode).getChild(i + 1);
                         break;
                     }
-                    // key is smaller than smallest key
                     else if (i == 0) {
-                        nodeToInsertTo = ((NonLeafNode) nodeToInsertTo).getChild(0);
+                        insertNode = ((NonLeafNode) insertNode).getChild(0);
                     }
                 }
 
-                if (nodeToInsertTo.isLeaf()) {
+                if (insertNode.isLeaf()) {
                     break;
                 }
 
             }
 
-            keys = nodeToInsertTo.getKeys();
+            keys = insertNode.getKeys();
             // loop to find which index to insert key
             for (int i = keys.size() - 1; i >= 0; i--) {
                 if (keys.get(i) <= key) {
-                    return (LeafNode) ((NonLeafNode) nodeToInsertTo).getChild(i + 1);
+                    return (LeafNode) ((NonLeafNode) insertNode).getChild(i + 1);
                 }
             }
-            return (LeafNode) ((NonLeafNode) nodeToInsertTo).getChild(0);
+            return (LeafNode) ((NonLeafNode) insertNode).getChild(0);
         }
 
     }
@@ -92,9 +86,9 @@ public class BpTree {
     public void insertKey(int key, Address add) {
         // have to first search for the LeafNode to insert to, then add a record add
         // that LeafNode
-        nodeToInsertTo = searchNode(key);
+        insertNode = searchNode(key);
 
-        ((LeafNode) nodeToInsertTo).addRecord(key, add);
+        ((LeafNode) insertNode).addRecord(key, add);
     }
     /* Lower Bound check */
     private int findLowerBound(int key) {
