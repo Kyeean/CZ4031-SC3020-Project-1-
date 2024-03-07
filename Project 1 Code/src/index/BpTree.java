@@ -191,44 +191,25 @@ public class BpTree {
         return addOfRecToDelete;
     }
 
-    /**
-     * Handles the case when a node in the b plus tree is underutilized and needs to
-     * be rebalanced.
-     * If the underutilized node is the root node, the
-     * {@link #handleInvalidRoot(Node)} method is called.
-     * If the underutilized node is a leaf node, the
-     * {@link #handleInvalidLeaf(Node, NonLeafNode, int, int)} method is called.
-     * If the underutilized node is a non-leaf node, the
-     * {@link #handleInvalidInternal(Node, NonLeafNode, int, int)} method is called.
-     *
-     * @param underUtilizedNode  the node that is underutilized and needs to be
-     *                           rebalanced
-     * @param parent             the parent node of the underutilized node
-     * @param parentPointerIndex the index of the pointer to the underutilized node
-     *                           in the parent node
-     * @param parentKeyIndex     the index of the key in the parent node that points
-     *                           to the underutilized node
-     * @throws IllegalStateException if the state of the tree is incorrect
-     */
+    /* Function to rebalance node  */
     private void handleInvalidTree(Node underUtilizedNode, NonLeafNode parent, int parentPointerIndex,
             int parentKeyIndex) throws IllegalStateException {
         if (parent == null) {
             handleInvalidRoot(underUtilizedNode);
         } else if (underUtilizedNode.isLeaf()) {
-            // Rebalancing of Leaf node
             handleInvalidLeaf(underUtilizedNode, parent,
                     parentPointerIndex, parentKeyIndex);
         } else if (underUtilizedNode.isNonLeaf()) {
-            // Rebalancing of Non-leaf node
             handleInvalidInternal(underUtilizedNode, parent,
                     parentPointerIndex, parentKeyIndex);
         } else {
             throw new IllegalStateException("state is wrong!");
         }
     }
+
     /* Function to handle Nodes which are not balanced */
     public void handleInvalidRoot(Node underUtilizedNode) {
-        if (underUtilizedNode.isLeaf()) { // Only node in B+ Tree - Root
+        if (underUtilizedNode.isLeaf()) { 
             ((LeafNode) underUtilizedNode).clear();
         } else {
             NonLeafNode nonLeafRoot = (NonLeafNode) underUtilizedNode;
@@ -285,8 +266,6 @@ public class BpTree {
             int parentKeyIndex) throws IllegalStateException {
 
         Node underUtilizedInternal = underUtilizedNode;
-
-        // load the adjacent nodes
         NonLeafNode prevInternal = null;
         NonLeafNode nextInternal = null;
         try {
@@ -305,64 +284,33 @@ public class BpTree {
             throw new IllegalStateException("Both prevInternal and nextInternal is null for " + underUtilizedNode);
 
         if (prevInternal != null && prevInternal.isAbleToGiveOneKey(NODE_SIZE)) {
-            // Move one key from left non leaf node
             moveOneKeyNonLeafNode(prevInternal, (NonLeafNode) underUtilizedInternal, true, parent, parentKeyIndex);
 
         } else if (nextInternal != null && nextInternal.isAbleToGiveOneKey(NODE_SIZE)) {
-            // Move one key from right non leaf node
             moveOneKeyNonLeafNode(nextInternal, (NonLeafNode) underUtilizedInternal, false, parent, parentKeyIndex + 1);
 
         }
-        // now, check if we can merge with the left node
+        /* Left node merge */
         else if (prevInternal != null &&
                 (underUtilizedInternal.getKeySize() + prevInternal.getKeySize()) <= NODE_SIZE) {
-            // Merge with left Non-Leaf node
             mergeNonLeafNodes(prevInternal, (NonLeafNode) underUtilizedInternal, parent,
                     parentPointerIndex, parentKeyIndex, true);
         }
-        // // check if we can merge with the right node
+        /* Right node merge */
         else if (nextInternal != null &&
                 (underUtilizedInternal.getKeySize() + nextInternal.getKeySize()) <= NODE_SIZE) {
-            // Merge with Right Non-Leaf Node
             mergeNonLeafNodes((NonLeafNode) underUtilizedInternal, nextInternal, parent,
                     parentPointerIndex + 1, parentKeyIndex + 1, false);
         } else {
             throw new IllegalStateException("Can't merge or redistribute internal node " + underUtilizedInternal);
         }
     }
-
-    /**
-     * Handles the case when a non-leaf node in the b plus tree is underutilized and
-     * needs to be rebalanced.
-     * Checks if it can redistribute with the next sibling node, then with the
-     * previous sibling node, and if neither are possible, merges the two nodes.
-     * If the merging results in the parent node being underutilized, the
-     * {@link #handleInvalidTree(Node, NonLeafNode, int, int)} method is called
-     * recursively.
-     *
-     * @param underUtilizedNode  the non-leaf node that is underutilized and needs
-     *                           to be rebalanced
-     * @param parent             the parent node of the underutilized node
-     * @param parentPointerIndex the index of the pointer to the underutilized node
-     *                           in the parent node
-     * @param parentKeyIndex     the index of the key in the parent node that points
-     *                           to the underutilized node
-     * @throws IllegalStateException if both previous and next sibling nodes are
-     *                               null, or if the state of the tree is incorrect
-     */
-    private void moveOneKeyNonLeafNode(NonLeafNode giver, NonLeafNode receiver,
-            boolean giverOnLeft, NonLeafNode parent,
-            int inBetweenKeyIdx) {
-        int key;
-
-        if (giverOnLeft) {
-            // "Moving one key from Left non-leaf sibling"
-            // Get last key from giver non leaf node to the receiver non leaf node
-            // Remove last key from giver
+    
+    /* Function to handle rebalancing a non-leaf node */
+    private void moveOneKeyNonLeafNode(NonLeafNode giver, NonLeafNode receiver, boolean giverOnLeft, NonLeafNode parent, int inBetweenKeyIdx) {
+            int key;
+            if (giverOnLeft) {
             giver.removeKeyAt(giver.getKeySize() - 1);
-
-            // Remove child from the giver node
-            // Add child to the non leaf node
             Node nodeToMove = giver.getChild(giver.getKeySize()); // get last child of giver
             giver.removeChild(nodeToMove);
             receiver.addChild(nodeToMove);
@@ -370,13 +318,9 @@ public class BpTree {
 
             key = receiver.getKeyAt(0);
         } else {
-            // Moving one key from Right non-leaf sibling
-            // Get first key from giver non leaf node to the receiver non leaf node
-            // Remove first key from giver
+
             giver.removeKeyAt(0);
 
-            // Remove child from the giver node
-            // Add child to the non leaf node
             Node nodeToMove = giver.getChild(0); // get first child of giver
             giver.removeChild(nodeToMove);
             receiver.addChild(nodeToMove);
@@ -385,9 +329,7 @@ public class BpTree {
 
             key = receiver.getKeyAt(0);
         }
-        // in either case update the parent key
-
-        // UpdateKey at higher levels with the correct lowerbound
+    
         int ptrIdx = receiver.searchKey(key, true);
         int keyIdx = ptrIdx - 1;
 
@@ -396,8 +338,6 @@ public class BpTree {
 
         int newLowerBound = 0;
 
-        // Get newLowerBound (possible for current key taken to be the lowerbound) if
-        // KeyIdx is not KeySize
         if (LeafNode.getKeySize() >= (keyIdx + 1)) {
             newLowerBound = lowerbound;
         } else {
@@ -408,71 +348,48 @@ public class BpTree {
         parent.replaceKeyAt(inBetweenKeyIdx, newLowerBound);
 
     }
-
-    /**
-     * Merge the node with the adjacent sibling (either left or right)
-     * if neither of the adjacent sibling can be used to merge or redistribute,
-     * the function will throw an exception. Otherwise, it will call the
-     * appropriate method to redistribute the keys.
-     *
-     * @param nodeToMergeTo   the node to merge to (either left or right)
-     * @param current         the underutilized node
-     * @param parent          the parent node of the underutilized node
-     * @param rightPointerIdx the index of the pointer pointing to the right sibling
-     * @param inBetweenKeyIdx the index of the key between two siblings
-     * @param mergeWithLeft   a boolean value indicating whether to merge with the
-     *                        left sibling or not
-     * @throws IllegalStateException if neither of the adjacent sibling can be used
-     *                               to merge or redistribute
-     */
+    /* Merge non leaf node with adjacent nodes */
+    
     private void mergeNonLeafNodes(NonLeafNode nodeToMergeTo, NonLeafNode current, NonLeafNode parent,
             int rightPointerIdx,
             int inBetweenKeyIdx, boolean mergeWithLeft) {
         int keyToRemove;
 
-        // merge the right node to left
         if (mergeWithLeft) {
 
             int moveKeyCount = current.getKeySize();
             keyToRemove = nodeToMergeTo.getChild(nodeToMergeTo.getKeySize()).getLastKey();
 
-            // move every key from current node into nodeToMergeTo
             for (int i = 0; i < moveKeyCount; i++) {
                 nodeToMergeTo.getKeys().add(nodeToMergeTo.getKeySize(), current.getKeyAt(i));
             }
 
-            // move every child from current node into nodeToMergeTo
             for (int i = 0; i < current.getChildren().size(); i++) {
                 nodeToMergeTo.getChildren().add(current.getChild(i));
             }
 
-            // Update parent after merging
             nodeToMergeTo.getKeys().add(nodeToMergeTo.getKeySize(),
                     nodeToMergeTo.getChild(nodeToMergeTo.getKeySize() + 1).getFirstKey());
             current.getParent().removeChild(current);
 
         }
 
-        // merge the left node with right
         else {
             int moveKeyCount = current.getKeySize();
 
             keyToRemove = current.getFirstKey();
 
-            // move every key from current node into nodeToMergeTo
             for (int i = 0; i < moveKeyCount; i++) {
                 nodeToMergeTo.getKeys().add(0, current.getKeyAt(i));
             }
             for (int i = 0; i < current.getChildren().size(); i++) {
                 nodeToMergeTo.getChildren().add(current.getChild(i));
             }
-            // Update parent after merging
             nodeToMergeTo.getKeys().add(0, nodeToMergeTo.getChild(1).getFirstKey());
             current.getParent().removeChild(current);
 
         }
 
-        // UpdateKey at higher levels with the correct lowerbound
         int ptrIdx = nodeToMergeTo.searchKey(keyToRemove, true);
         int keyIdx = ptrIdx - 1;
 
@@ -480,8 +397,7 @@ public class BpTree {
         int lowerbound = findLowerBound(keyToRemove);
         int newLowerBound = 0;
 
-        // Get newLowerBound (possible for current key taken to be the lowerbound) if
-        // KeyIdx is not KeySize
+
         if (LeafNode.getKeySize() >= (keyIdx + 1)) {
             newLowerBound = lowerbound;
         } else {
@@ -491,23 +407,8 @@ public class BpTree {
         }
     }
 
-    /**
-     * Merges the current leaf node with its adjacent leaf node, either to its left
-     * or right, depending on the value of the 'mergetoright' boolean flag.
-     *
-     * @param nodeToMergeTo   the leaf node that will merge with the current node
-     * @param current         the leaf node that will be merged with the adjacent
-     *                        node
-     * @param parent          the parent node of the two leaf nodes being merged
-     * @param rightPointerIdx the index of the pointer to the right of the current
-     *                        node in the parent node's child list
-     * @param inBetweenKeyIdx the index of the key in the parent node that lies
-     *                        between the two leaf nodes being merged
-     * @param mergetoright    a boolean flag indicating whether to merge with the
-     *                        right or left adjacent node
-     * @throws IllegalArgumentException if the parent node is null
-     */
 
+    /* Merge leaf node with adjacent leaf node */
     private void mergeLeafNodes(LeafNode nodeToMergeTo, LeafNode current, NonLeafNode parent,
             int rightPointerIdx, int inBetweenKeyIdx, boolean mergetoright) {
         int removedKey = 0;
@@ -523,15 +424,13 @@ public class BpTree {
 
         }
 
-        parent.removeChild(current); // To remove the empty leaf node
+        parent.removeChild(current); 
         if ((parent.getChildren().size()) == (parent.getKeySize())) {
-            // No need to update parent
         } else {
             parent.removeKeyAt(inBetweenKeyIdx);
         }
 
         if (mergetoright == true) {
-            // update the prev pointer of right next node (if any)
             if (current.getNext() != null) {
                 LeafNode currentNext = current.getNext();
                 currentNext.setPrevious(current.getPrevious());
@@ -545,7 +444,6 @@ public class BpTree {
                 currParent.removeKeyAt(0);
             }
         } else {
-            // update the prev pointer of left getprevious node (if any)
 
             if (current.getPrevious() != null) {
                 LeafNode currentPrev = current.getPrevious();
@@ -561,7 +459,6 @@ public class BpTree {
             }
             if (current.getKeySize() == 0) {
 
-                // currParent.removeChild(current);
                 NonLeafNode currParent = current.getParent();
                 currParent.removeChild(current);
                 // if (currParent.getKeySize() > 0){
@@ -590,8 +487,7 @@ public class BpTree {
 
         int lowerbound = findLowerBound(removedKey);
         int newLowerBound = 0;
-        // Get newLowerBound (possible for current key taken to be the lowerbound) if
-        // KeyIdx is not KeySize
+        
         if (current.getParent().getKeySize() >= NoOfChildren) { // check if number of children == original # of children
             newLowerBound = lowerbound;
         } else {
@@ -606,56 +502,33 @@ public class BpTree {
 
     }
 
-    /**
-     * Merges two leaf nodes by moving keys and records from the current node to the
-     * nodeToMergeTo.
-     * Updates the parent node and the next and previous pointers of the nodes
-     * involved in the merge.
-     * Also updates the lower bound key for the merged nodes.
-     *
-     * @param nodeToMergeTo   The leaf node that will receive the keys and records
-     *                        from the current node.
-     * @param current         The leaf node that will be merged into nodeToMergeTo.
-     * @param parent          The parent node of the leaf nodes.
-     * @param rightPointerIdx The index of the right pointer in the parent node.
-     * @param inBetweenKeyIdx The index of the key in the parent node that is
-     *                        between the current and nodeToMergeTo nodes.
-     * @param mergetoright    A boolean value indicating whether the current node
-     *                        will be merged to the right (true) or to the left
-     *                        (false) of the nodeToMergeTo.
-     */
+
     private void moveOneKey(LeafNode giver, LeafNode receiver,
             boolean giverOnLeft, NonLeafNode parent,
             int inBetweenKeyIdx) {
         int key;
         if (giverOnLeft) {
-            // move the key from left node to right
-            // 1. Move and edit map records
+        
             int giverKey = giver.getLastKey();
             receiver.insertByRedistribution(giverKey, giver.getAddressesForKey(giverKey));
             giver.removeKeyInMap(giverKey);
 
-            // 2. Move and edit key in node
             receiver.insertKeyAt(0, giverKey);
             giver.removeKeyAtLast();
             key = receiver.getKeyAt(0);
         } else {
-            // move key from right node to left node
-            // 1. Move and edit map records
+        
             int giverKey = giver.getFirstKey();
             receiver.insertByRedistribution(giverKey, giver.getAddressesForKey(giverKey));
             giver.removeKeyInMap(giverKey);
 
-            // 2. Move and edit key in node
             giver.removeKeyAt(0);
             receiver.insertKeyAt(receiver.getKeySize(), giverKey);
             key = giver.getKeyAt(0);
 
         }
 
-        // Update receiver parent
         if (inBetweenKeyIdx == -1) {
-            // Do not update parent
         } else if (inBetweenKeyIdx >= 0) {
             if (parent.getKeySize() == inBetweenKeyIdx) {
                 parent.replaceKeyAt(inBetweenKeyIdx - 1, key);
@@ -669,7 +542,6 @@ public class BpTree {
             } else {
                 parent.replaceKeyAt(inBetweenKeyIdx, key);
 
-                // if giver is from the same parent, update parent @ index+1 with firstkey
                 if (giver.getParent().getChild(inBetweenKeyIdx + 1).getFirstKey() != key) {
                     giver.getParent().replaceKeyAt(inBetweenKeyIdx,
                             giver.getParent().getChild(inBetweenKeyIdx + 1).getFirstKey());
@@ -687,8 +559,7 @@ public class BpTree {
         int lowerbound = findLowerBound(key);
         int newLowerBound = 0;
 
-        // Get newLowerBound (possible for current key taken to be the lowerbound) if
-        // KeyIdx is not KeySize
+        
         if (LeafNode.getKeySize() >= (keyIdx + 1)) {
             newLowerBound = lowerbound;
         } else {
@@ -700,28 +571,15 @@ public class BpTree {
 
     }
 
-    /**
-     * Wrapper function on top of searchNode
-     *
-     * @param key
-     * @return ArrayList of Address in the database
-     */
     public ArrayList<Address> searchKey(int key) {
         return (searchValue(this.rootNode, key));
     }
 
-    /**
-     * Searches for a value associated with a given key in a B+ tree.
-     *
-     * @param node The root node of the B+ tree.
-     * @param key  The key to search for.
-     * @return An ArrayList of Addresses that correspond to the given key,
-     *         or null if the key is not found.
-     */
+
+    /* Function to search a value with a given key */
     public ArrayList<Address> searchValue(Node node, int key) {
         PerformanceRecorder.addOneNodeReads();
 
-        // Find if key is within the rootNode
         if (node.isLeaf()) {
             int ptrIdx = node.searchKey(key, false);
             if (ptrIdx >= 0 && ptrIdx < node.getKeySize() && key == node.getKeyAt(ptrIdx)) {
@@ -729,8 +587,6 @@ public class BpTree {
             }
             return null;
         }
-        // If it's an internal node, descend until we reach a leaf node to find the
-        // results
         else {
             int ptrIdx = node.searchKey(key, false); // looks for the upper bound of the key in the node
             Node childNode = ((NonLeafNode) node).getChild(ptrIdx);
@@ -738,28 +594,12 @@ public class BpTree {
         }
     }
 
-    /**
-     * Wrapper Function of rangeSearch
-     *
-     * @param minKey min key of the range (inclusive)
-     * @param maxKey max key of the range (inclusive)
-     */
+    /* Function to Search in a range */
     public ArrayList<Address> rangeSearch(int minKey, int maxKey) {
         return searchValuesInRange(minKey, maxKey, this.rootNode);
     }
 
-    /**
-     * Searches for values in a given range of keys within a B+ tree.
-     *
-     * @param minKey The minimum key in the range.
-     * @param maxKey The maximum key in the range.
-     * @param node   The root node of the B+ tree.
-     * @return An ArrayList of Addresses that correspond to the values in the given
-     *         range of keys,
-     *         or null if no values are found.
-     * @throws IllegalStateException if a leaf node with zero keys is encountered
-     *                               during the search.
-     */
+    /* Search for values in a given range */
     public static ArrayList<Address> searchValuesInRange(int minKey, int maxKey, Node node) {
         int ptrIdx;
         ArrayList<Address> resultList = new ArrayList<>();
@@ -769,11 +609,8 @@ public class BpTree {
             LeafNode leaf = (LeafNode) node;
             while (true) {
                 if (ptrIdx == leaf.getKeySize()) {
-                    // check if we have a next node to load.
-                    // Assuming that next node return a null if there's no next node
                     if (leaf.getNext() == null)
-                        break; // if not just break the loop
-                    // Traverse to the next node and start searching from index 0 within the next node again
+                        break; 
                     leaf = (LeafNode) (leaf.getNext());
                     PerformanceRecorder.addOneRangeNodeReads();
 
