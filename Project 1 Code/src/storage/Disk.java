@@ -8,7 +8,7 @@ public class Disk {
     private Block[] blocks;
 
     private int recordCount = 0;
-    private int blockAccessReduced = 0;
+//  private int blockAccessReduced = 0;
     private static int blockAccesses = 0;
     // private int blockSize, diskSize;
 //    private boolean[] availableBlocks;
@@ -177,9 +177,10 @@ public class Disk {
     public int getBlockAccesses() {
         return blockAccesses;
     }
-    public int getBlockAccessReduced() {
-        return blockAccessReduced;
-    }
+    
+    // public int getBlockAccessReduced() {
+    //     return blockAccessReduced;
+    // }
     
     // public void printRecordsinBlock(int blockPtr){
 
