@@ -67,7 +67,7 @@ public class Disk {
         occupiedBlocks.add(blockPtr);
         if(!blocks[blockPtr].isBlockAvailable()){
 //            availableBlocks[blockPtr] = false;
-        	occupiedBlocks.remove(blockPtr);
+        	freeBlocks.remove(blockPtr);
         }
         return new Address(blockPtr, addr);
     }
