@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-/*import java.util.Set;*/
 import storage.Address;
 /* 
- * This class represents a node in a B+ Tree 
+ * This class represents a node class in a Bp Tree 
 */
 public class Node {
     private boolean isLeaf; /*Check if node is a leaf node*/
@@ -20,7 +19,7 @@ public class Node {
     protected ArrayList<Integer> keys;
     Node rootNode;
 
-
+    //Initial parameters of a Node
     public Node(){
         this.rootNode = BpTree.getRoot();
         this.isLeaf = false;

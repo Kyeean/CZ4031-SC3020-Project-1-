@@ -1,5 +1,8 @@
 package index;
 
+/*
+ *  This class is to track the key metrics of the Bp Tree behaviour during operations
+ */
 public class PerformanceRecorder {
 
     private static int totalNodes;
