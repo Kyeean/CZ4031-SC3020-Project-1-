@@ -7,26 +7,18 @@ import storage.Record;
 import storage.Disk;
 import util.Parser;
 
-/*
- * Class representing the B+ tree
- */
+/* BPlus Tree Class */
 public class BpTree {
 
     static final int NODE_SIZE = (Parser.BLOCK_SIZE - Parser.OVERHEAD)/(Parser.POINTER_SIZE+Parser.KEY_SIZE);
     static Node rootNode;
     Node nodeToInsertTo;
-
+    // Initial Node creation
     public BpTree() {
-        // Initialise the first node as root node
-        rootNode = createFirstNode();
+        rootNode = InitialNode();
     }
-
-    /**
-     * Creates the first node in the B+ tree.
-     * 
-     * @param newNode is the the first leaf node created
-     */
-    public LeafNode createFirstNode() {
+    // First Node in the Bp Tree
+    public LeafNode InitialNode() {
         LeafNode newNode = new LeafNode();
         PerformanceRecorder.addOneNode();
         newNode.setRoot(true);
@@ -35,33 +27,20 @@ public class BpTree {
         return newNode;
     }
 
-    /**
-     * Creates new node.
-     * Calls addOneNode for counting of total amount of nodes.
-     * 
-     * @return newly created node
-     */
+    // Creation of Nodes
     public static Node createNode() {
         Node newNode = new Node();
         PerformanceRecorder.addOneNode();
         return newNode;
     }
 
-    /**
-     * Update whether current node is a leaf node from boolean argument root.
-     * 
-     * @param root set boolean value of node to root.
-     */
+    /* Update node to root */
     public static void setRoot(Node root) {
         rootNode = root;
         rootNode.setRoot(true);
     }
 
-    /**
-     * Returns the root node of the B+ tree
-     * 
-     * @return the root node of the B+ tree
-     */
+    /* Return root node of Bp Tree */ 
     public static Node getRoot() {
         return rootNode;
     }
@@ -946,9 +925,9 @@ public class BpTree {
      *
      * @param root the root of the tree to print
      */
-    public void printBPlusTree(Node root) {
-        printBPlusTreeHelper(root, "");
-    }
+    // public void printBPlusTree(Node root) {
+    //     printBPlusTreeHelper(root, "");
+    // }
 
     /**
      * Helper method to print the subtree rooted at the given node.
@@ -956,36 +935,34 @@ public class BpTree {
      * @param node   the root of the subtree to print
      * @param indent the current indentation level
      */
-    private void printBPlusTreeHelper(Node node, String indent) {
-        if (node == null) {
-            return;
-        }
-        if (node.isLeaf()) {
-            LeafNode leaf = (LeafNode) node;
-            System.out.print(indent + "LeafNode: ");
-            for (int key : leaf.getKeys()) {
-                System.out.print(key + " ");
-            }
-            System.out.println();
-        } else {
-            NonLeafNode nonLeaf = (NonLeafNode) node;
-            System.out.print(indent + "NonLeafNode: ");
-            for (int key : nonLeaf.getKeys()) {
-                System.out.print(key + " ");
-            }
-            System.out.println();
-            for (Node child : nonLeaf.getChildren()) {
-                printBPlusTreeHelper(child, indent + "  ");
-            }
+    // private void printBPlusTreeHelper(Node node, String indent) {
+    //     if (node == null) {
+    //         return;
+    //     }
+    //     if (node.isLeaf()) {
+    //         LeafNode leaf = (LeafNode) node;
+    //         System.out.print(indent + "LeafNode: ");
+    //         for (int key : leaf.getKeys()) {
+    //             System.out.print(key + " ");
+    //         }
+    //         System.out.println();
+    //     } else {
+    //         NonLeafNode nonLeaf = (NonLeafNode) node;
+    //         System.out.print(indent + "NonLeafNode: ");
+    //         for (int key : nonLeaf.getKeys()) {
+    //             System.out.print(key + " ");
+    //         }
+    //         System.out.println();
+    //         for (Node child : nonLeaf.getChildren()) {
+    //             printBPlusTreeHelper(child, indent + "  ");
+    //         }
 
-        }
+    //     }
 
-    }
+    // }
 
-    /**
-     * Count Tree level of B+ Tree
-     * 
-     * @param node the start of the node to travel down 
+    /*
+     * Count the number of levels in the Bp Tree
      */
     private void countLevel(Node node) {
         while (!node.isLeaf()) {
@@ -996,11 +973,7 @@ public class BpTree {
         PerformanceRecorder.addOneTreeDegree();
     }
 
-    /**
-     * Function for Experiment 2 of Project 1 (Insertion of B+ Tree)
-     * 
-     * @param tree the B+ Tree used for the experiment
-     */
+    // Experiment 2
     public static void experimentTwo(BpTree tree) {
         System.out.println("\n----------------------EXPERIMENT 2-----------------------");
         PerformanceRecorder performance = new PerformanceRecorder();
@@ -1010,13 +983,7 @@ public class BpTree {
         System.out.printf("No. of Levels in B+ tree: %d\n", performance.getTreeDegree());
         System.out.println("Content of the root node: " + BpTree.getRoot().keys);
     }
-
-    /**
-     * Function for Experiment 3 of Project 1 (Search Query for numVotes equal to '500')
-     * 
-     * @param db the database used for the experiment
-     * @param tree the B+ Tree used for the experiment
-     */
+    // Experiment 3
     public static void experimentThree(Disk db, BpTree tree) {
         System.out.println("\n----------------------EXPERIMENT 3-----------------------");
         PerformanceRecorder performance = new PerformanceRecorder();
@@ -1051,12 +1018,7 @@ public class BpTree {
         /*System.out.printf("\nNo. of Data Blocks accessed reduced in total: %d\n ", db.getBlockAccessReduced()); */
     }
 
-    /**
-     * Function for Experiment 4 of Project 1 (Range Query Search for numVotes of '30,000' to '40,000')
-     *
-     * @param db the database used for the experiment
-     * @param tree the B+ Tree used for the experiment
-     */
+    // Experiment 4
     public static void experimentFour(Disk db, BpTree tree) {
         System.out.println("\n\n----------------------EXPERIMENT 4-----------------------");
         PerformanceRecorder performance = new PerformanceRecorder();
@@ -1091,12 +1053,7 @@ public class BpTree {
         /*System.out.printf("\nNo. of Data Blocks accessed reduced in total: %d\n ", db.getBlockAccessReduced()); */
     }
 
-    /**
-     * Function for Experiment 5 of Project 1 (Deletion for numVotes equal to value '1000')
-     * 
-     * @param db the database used for the experiment
-     * @param tree the B+ Tree used for the experiment
-     */
+    // Experiment 5
     public static void experimentFive(Disk db, BpTree tree) {
         System.out.println("\n\n----------------------EXPERIMENT 5-----------------------");
         PerformanceRecorder performance = new PerformanceRecorder();
