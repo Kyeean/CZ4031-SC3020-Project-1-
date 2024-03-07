@@ -141,7 +141,7 @@ public class BpTree {
             }
 
             // found keys to delete: 1) remove key in map 2) remove idx in records
-            addOfRecToDelete.addAll(leaf.getKeyAddresses(key));
+            addOfRecToDelete.addAll(leaf.getAddressesForKey(key));
             leaf.removeKeyAt(keyIdx);
             leaf.removeKeyInMap(key);
 
@@ -413,7 +413,7 @@ public class BpTree {
             int leftLastIdx = nodeToMergeTo.getLastIdx();
             nodeToMergeTo.insertKeyAt(leftLastIdx + 1, removedKey);
             // 2. Move over the records
-            nodeToMergeTo.insertByRedistribution(removedKey, current.getKeyAddresses(removedKey));
+            nodeToMergeTo.insertByRedistribution(removedKey, current.getAddressesForKey(removedKey));
             current.removeKeyInMap(removedKey);
 
         }
@@ -504,7 +504,7 @@ public class BpTree {
         if (giverOnLeft) {
         
             int giverKey = giver.getLastKey();
-            receiver.insertByRedistribution(giverKey, giver.getKeyAddresses(giverKey));
+            receiver.insertByRedistribution(giverKey, giver.getAddressesForKey(giverKey));
             giver.removeKeyInMap(giverKey);
 
             receiver.insertKeyAt(0, giverKey);
@@ -513,7 +513,7 @@ public class BpTree {
         } else {
         
             int giverKey = giver.getFirstKey();
-            receiver.insertByRedistribution(giverKey, giver.getKeyAddresses(giverKey));
+            receiver.insertByRedistribution(giverKey, giver.getAddressesForKey(giverKey));
             giver.removeKeyInMap(giverKey);
 
             giver.removeKeyAt(0);
@@ -577,7 +577,7 @@ public class BpTree {
         if (node.isLeaf()) {
             int ptrIdx = node.searchKey(key, false);
             if (ptrIdx >= 0 && ptrIdx < node.getKeySize() && key == node.getKeyAt(ptrIdx)) {
-                return ((LeafNode) node).getKeyAddresses(key); // returns an ArrayList of addresses
+                return ((LeafNode) node).getAddressesForKey(key); // returns an ArrayList of addresses
             }
             return null;
         }
@@ -615,7 +615,7 @@ public class BpTree {
                 if (leaf.getKey(ptrIdx) > maxKey)
                     break;
                 int key = leaf.getKey(ptrIdx);
-                resultList.addAll(leaf.getKeyAddresses(key));
+                resultList.addAll(leaf.getAddressesForKey(key));
                 ptrIdx++;
             }
             return (resultList.size() > 0 ? resultList : null);
