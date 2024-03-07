@@ -44,68 +44,28 @@ public class BpTree {
     public static Node getRoot() {
         return rootNode;
     }
-
-    /**
-     * Inserts the given key and address object into the leaf node returned from
-     * searchNode
-     * 
-     * @param key the key to be added into the leaf node
-     * @param add the address object to be added into the leaf node
-     */
-
-    public void insertKey(int key, Address add) {
-        // have to first search for the LeafNode to insert to, then add a record add
-        // that LeafNode
-        nodeToInsertTo = searchNode(key);
-
-        ((LeafNode) nodeToInsertTo).addRecord(key, add);
-    }
-
-    /**
-     * Loops through tree to find for node containing the integer key.
-     * 
-     * @param key The key to search for.
-     * @return the node containig the integer key.
-     */
-    // finding the leaf node to find/insert the key to
+    /* Function to search for a Node */
     public LeafNode searchNode(int key) {
         ArrayList<Integer> keys;
-
-        // If root is a leaf node, means its still at the first node, hence return the
-        // rootNode
+        // If root is a leaf node
         if (BpTree.rootNode.isLeaf()) {
             setRoot(rootNode);
             return (LeafNode) rootNode;
         }
-
-        // else, it is not a leaf node
+        //not a leaf node
         else {
             Node nodeToInsertTo = (NonLeafNode) getRoot();
-
-            // Starting from the rootnode, keep looping (going down) until the current
-            // node's (nodeToInsertTo) child is a leaf node
-
+            //traverse tree until a leaf node
             while (!((NonLeafNode) nodeToInsertTo).getChild(0).isLeaf()) {
-
                 keys = nodeToInsertTo.getKeys();
-
-                // loops through keys of current node (nodeToInsertTo)
-
+                // loop through keys in current node
                 for (int i = keys.size() - 1; i >= 0; i--) {
-
-                    // if there exists a key in the node where it's value is smaller or equals to
-                    // the key,
-                    // set the current node to the child node corresponding to that node
-
+                    // key is smaller or equal to key in node
                     if (nodeToInsertTo.getKey(i) <= key) {
                         nodeToInsertTo = ((NonLeafNode) nodeToInsertTo).getChild(i + 1);
                         break;
                     }
-
-                    // if the index reaches 0, means that the key is smaller than the smallest key
-                    // in the node (at index 0)
-                    // set the current node to the child node that corresponds to that node
-
+                    // key is smaller than smallest key
                     else if (i == 0) {
                         nodeToInsertTo = ((NonLeafNode) nodeToInsertTo).getChild(0);
                     }
@@ -118,33 +78,26 @@ public class BpTree {
             }
 
             keys = nodeToInsertTo.getKeys();
-
-            // Looping through the current node's indexes to find which of its leaf/child
-            // node to insert the key into,
-            // similar to above but this is to obtain the leaf node
-            // return the child node once found
+            // loop to find which index to insert key
             for (int i = keys.size() - 1; i >= 0; i--) {
                 if (keys.get(i) <= key) {
                     return (LeafNode) ((NonLeafNode) nodeToInsertTo).getChild(i + 1);
                 }
             }
-
-            // if the key is smaller than the smallest key in the current node, return the
-            // child corresponding to the smallest key
             return (LeafNode) ((NonLeafNode) nodeToInsertTo).getChild(0);
         }
 
     }
+    /* Function to insert key */
+    public void insertKey(int key, Address add) {
+        // have to first search for the LeafNode to insert to, then add a record add
+        // that LeafNode
+        nodeToInsertTo = searchNode(key);
 
-    /**
-     * Finds the lower bound of the specified key in the B+ tree.
-     *
-     * @param key the key to find the lower bound of
-     * @return the lower bound of the specified key
-     */
-
-    private int checkForLowerbound(int key) {
-
+        ((LeafNode) nodeToInsertTo).addRecord(key, add);
+    }
+    /* Lower Bound check */
+    private int findLowerBound(int key) {
         NonLeafNode node = (NonLeafNode) rootNode;
         boolean found = false;
         int lowerbound = 0;
@@ -171,17 +124,11 @@ public class BpTree {
 
     }
 
-    /**
-     * Wrapper function for deleting node
-     * Also finds the lower bound of the subtree containing the node with the
-     * specified key value.
-     *
-     * @param key the key to be deleted
-     * @return AraryList of address to be removed from database
-     */
+
+    /* Deletion of Node & find lower bound using findLowerBound */
     public ArrayList<Address> deleteKey(int key) {
         int lowerbound = 0;
-        lowerbound = checkForLowerbound(key);
+        lowerbound = findLowerBound(key);
         return (deleteNode(rootNode, null, -1, -1, key, lowerbound));
     }
 
@@ -235,7 +182,7 @@ public class BpTree {
                 LeafNode.updateKey(ptrIdx - 1, keys.get(0), false, newLowerBound);
 
             } else {
-                newLowerBound = checkForLowerbound(LeafNode.getKey(keyIdx + 1)); // Get new lowerbound
+                newLowerBound = findLowerBound(LeafNode.getKey(keyIdx + 1)); // Get new lowerbound
                 List<Integer> keys = LeafNode.getKeys();
                 LeafNode.updateKey(ptrIdx - 1, keys.get(0), true, newLowerBound);
             }
@@ -516,7 +463,7 @@ public class BpTree {
         int keyIdx = ptrIdx - 1;
 
         NonLeafNode LeafNode = (NonLeafNode) receiver;
-        int lowerbound = checkForLowerbound(key);
+        int lowerbound = findLowerBound(key);
 
         int newLowerBound = 0;
 
@@ -525,8 +472,8 @@ public class BpTree {
         if (LeafNode.getKeySize() >= (keyIdx + 1)) {
             newLowerBound = lowerbound;
         } else {
-            newLowerBound = checkForLowerbound(LeafNode.getKey(keyIdx + 1));
-            parent.updateKey(inBetweenKeyIdx - 1, key, false, checkForLowerbound(key));
+            newLowerBound = findLowerBound(LeafNode.getKey(keyIdx + 1));
+            parent.updateKey(inBetweenKeyIdx - 1, key, false, findLowerBound(key));
 
         }
         parent.replaceKeyAt(inBetweenKeyIdx, newLowerBound);
@@ -601,7 +548,7 @@ public class BpTree {
         int keyIdx = ptrIdx - 1;
 
         NonLeafNode LeafNode = (NonLeafNode) nodeToMergeTo;
-        int lowerbound = checkForLowerbound(keyToRemove);
+        int lowerbound = findLowerBound(keyToRemove);
         int newLowerBound = 0;
 
         // Get newLowerBound (possible for current key taken to be the lowerbound) if
@@ -609,8 +556,8 @@ public class BpTree {
         if (LeafNode.getKeySize() >= (keyIdx + 1)) {
             newLowerBound = lowerbound;
         } else {
-            newLowerBound = checkForLowerbound(LeafNode.getKey(keyIdx + 1)); // Get new lowerbound
-            parent.updateKey(inBetweenKeyIdx - 1, keyToRemove, false, checkForLowerbound(keyToRemove));
+            newLowerBound = findLowerBound(LeafNode.getKey(keyIdx + 1)); // Get new lowerbound
+            parent.updateKey(inBetweenKeyIdx - 1, keyToRemove, false, findLowerBound(keyToRemove));
 
         }
     }
@@ -712,7 +659,7 @@ public class BpTree {
             }
         }
 
-        int lowerbound = checkForLowerbound(removedKey);
+        int lowerbound = findLowerBound(removedKey);
         int newLowerBound = 0;
         // Get newLowerBound (possible for current key taken to be the lowerbound) if
         // KeyIdx is not KeySize
@@ -808,7 +755,7 @@ public class BpTree {
         int keyIdx = ptrIdx - 1;
 
         LeafNode LeafNode = (LeafNode) receiver;
-        int lowerbound = checkForLowerbound(key);
+        int lowerbound = findLowerBound(key);
         int newLowerBound = 0;
 
         // Get newLowerBound (possible for current key taken to be the lowerbound) if
@@ -816,9 +763,9 @@ public class BpTree {
         if (LeafNode.getKeySize() >= (keyIdx + 1)) {
             newLowerBound = lowerbound;
         } else {
-            newLowerBound = checkForLowerbound(LeafNode.getKey(keyIdx + 1)); // Get new lowerbound
+            newLowerBound = findLowerBound(LeafNode.getKey(keyIdx + 1)); // Get new lowerbound
             parent.updateKey(inBetweenKeyIdx - 1, parent.getChild(inBetweenKeyIdx).getFirstKey(), false,
-                    checkForLowerbound(key));
+            findLowerBound(key));
 
         }
 
@@ -919,47 +866,6 @@ public class BpTree {
             return (searchValuesInRange(minKey, maxKey, childNode));
         }
     }
-
-    /**
-     * Prints the B+ tree rooted at the given node in a readable format.
-     *
-     * @param root the root of the tree to print
-     */
-    // public void printBPlusTree(Node root) {
-    //     printBPlusTreeHelper(root, "");
-    // }
-
-    /**
-     * Helper method to print the subtree rooted at the given node.
-     *
-     * @param node   the root of the subtree to print
-     * @param indent the current indentation level
-     */
-    // private void printBPlusTreeHelper(Node node, String indent) {
-    //     if (node == null) {
-    //         return;
-    //     }
-    //     if (node.isLeaf()) {
-    //         LeafNode leaf = (LeafNode) node;
-    //         System.out.print(indent + "LeafNode: ");
-    //         for (int key : leaf.getKeys()) {
-    //             System.out.print(key + " ");
-    //         }
-    //         System.out.println();
-    //     } else {
-    //         NonLeafNode nonLeaf = (NonLeafNode) node;
-    //         System.out.print(indent + "NonLeafNode: ");
-    //         for (int key : nonLeaf.getKeys()) {
-    //             System.out.print(key + " ");
-    //         }
-    //         System.out.println();
-    //         for (Node child : nonLeaf.getChildren()) {
-    //             printBPlusTreeHelper(child, indent + "  ");
-    //         }
-
-    //     }
-
-    // }
 
     /*
      * Count the number of levels in the Bp Tree
