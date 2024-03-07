@@ -11,14 +11,14 @@ public class LeafNode extends Node {
 
     protected TreeMap<Integer, ArrayList<Address>> map;
     protected ArrayList<Address> records;
-    private LeafNode nextNode;
-    private LeafNode prevNode;
+    private LeafNode rightNode;
+    private LeafNode leftNode;
 
     public LeafNode() {
         super();
         setLeaf(true);
-        setNext(null);
-        setPrevious(null);
+        setRight(null);
+        setLeft(null);
     }
 
     /* Find records associated with the key. */
@@ -97,23 +97,23 @@ public class LeafNode extends Node {
         keys.add(i, key);
     }
 
-    /* set next node as sibling node */
-    public void setNext(LeafNode sibling) {
-        nextNode = sibling;
+    /* set variable rightNode as node on the right */
+    public void setRight(LeafNode siblingRight) {
+        rightNode = siblingRight;
     }
     /* get next node */
     public LeafNode getNext() {
-        return nextNode;
+        return rightNode;
     }
 
-    /* set prevNode with previous node */
-    public void setPrevious(LeafNode prev) {
-        prevNode = prev;
+    /* set variable leftNode with node on the left  */
+    public void setLeft(LeafNode siblingLeft) {
+        leftNode = siblingLeft;
     }
 
     /* Get the prevNode. */
-    public LeafNode getPrevious() {
-        return prevNode;
+    public LeafNode getLeft() {
+        return leftNode;
     }
 
     /* Empty keys and records in current leaf node */
