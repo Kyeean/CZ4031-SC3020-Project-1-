@@ -37,6 +37,6 @@ public class Record {
     }
 
     public String toString() {
-        return String.format("Record Info: Tconst: %s, avgRating: %f, numVotes: %d ", this.getTconst(), this.getAvgRating(), this.getNumVotes());
+        return String.format("Tconst: %s, avgRating: %f, numVotes: %d ", this.getTconst(), this.getAvgRating(), this.getNumVotes());
     }
 }

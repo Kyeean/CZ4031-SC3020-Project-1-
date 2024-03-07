@@ -865,19 +865,19 @@ public class BpTree {
 
     // Experiment 2
     public static void experimentTwo(BpTree tree) {
-        System.out.println("\n----------------------EXPERIMENT 2-----------------------");
+        System.out.println("\nEXPERIMENT 2: ");
         PerformanceRecorder performance = new PerformanceRecorder();
-        System.out.println("Parameter n: " + NODE_SIZE);
-        System.out.printf("No. of Nodes in B+ tree: %d\n", performance.getTotalNodes());
+        System.out.println("Parameter n of B+ Tree: " + NODE_SIZE);
+        System.out.printf("Number of nodes in B+ tree: %d\n", performance.getTotalNodes());
         tree.countLevel(tree.getRoot());
-        System.out.printf("No. of Levels in B+ tree: %d\n", performance.getTreeDegree());
+        System.out.printf("Number of levels in B+ tree: %d\n", performance.getTreeDegree());
         System.out.println("Content of the root node: " + BpTree.getRoot().keys);
     }
     // Experiment 3
     public static void experimentThree(Disk db, BpTree tree) {
-        System.out.println("\n----------------------EXPERIMENT 3-----------------------");
+        System.out.println("\nEXPERIMENT 3: ");
         PerformanceRecorder performance = new PerformanceRecorder();
-        System.out.println("Movies with the 'numVotes' equal to 500: ");
+        System.out.println("Number of records with 'numVotes' = 500: ");
 
         long startTime = System.nanoTime();
         ArrayList<Address> resultAdd = tree.searchKey(500);
@@ -894,12 +894,12 @@ public class BpTree {
                 totalCount++;
             }
         }
-        System.out.printf("\n\nNo. of Index Nodes the process accesses: %d\n", performance.getNodeReads());
-        /*System.out.printf("No. of Data Blocks the process accesses: %d\n", db.getBlockAccesses()); */
+        System.out.printf("\n\nNumber of Index Nodes accessed: %d\n", performance.getNodeReads());
+        System.out.printf("Number of Data Blocks accessed: %d\n", db.getBlockAccesses());
         System.out.printf("Average of 'averageRating's' of the records accessed: %.2f\n",
                 (double) totalAverageRating / totalCount);
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.printf("Running time of retrieval process: %d nanoseconds\n", duration);
+        System.out.printf("Time taken searching using B+ Tree: %d nanoseconds\n", duration);
         startTime = System.nanoTime();
         int bruteForceAccessCount = db.getBlocksAccessedByForce(500, 500);
         endTime = System.nanoTime();
@@ -910,9 +910,9 @@ public class BpTree {
 
     // Experiment 4
     public static void experimentFour(Disk db, BpTree tree) {
-        System.out.println("\n\n----------------------EXPERIMENT 4-----------------------");
+        System.out.println("\n\nEXPERIMENT 4: ");
         PerformanceRecorder performance = new PerformanceRecorder();
-        System.out.println("Movies with the 'numVotes' from 30,000 to 40,000, both inclusively: ");
+        System.out.println("Movies with the 'numVotes' from 30,000 to 40,000: ");
         long startTime = System.nanoTime();
         ArrayList<Address> resultAdd = tree.rangeSearch(30000, 40000);
         long endTime = System.nanoTime();
@@ -928,12 +928,12 @@ public class BpTree {
                 totalCount++;
             }
         }
-        System.out.printf("\n\nNo. of Index Nodes the process accesses: %d\n", performance.getRangeNodeReads());
-        /*System.out.printf("No. of Data Blocks the process accesses: %d\n", db.getBlockAccesses());*/
+        System.out.printf("\n\nNumber of Index Nodes accessed: %d\n", performance.getRangeNodeReads());
+        System.out.printf("Number of Data Blocks the process accesses: %d\n", db.getBlockAccesses());
         System.out.printf("Average of 'averageRating's' of the records accessed: %.2f",
                 (double) totalAverageRating / totalCount);
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.printf("\nRunning time of retrieval process: %d nanoseconds\n", duration);
+        System.out.printf("\nTime taken searching using B+ Tree: %d nanoseconds\n", duration);
         startTime = System.nanoTime();
         int bruteForceAccessCount = db.getBlocksAccessedByForce(30000, 40000);
         endTime = System.nanoTime();
@@ -945,7 +945,7 @@ public class BpTree {
 
     // Experiment 5
     public static void experimentFive(Disk db, BpTree tree) {
-        System.out.println("\n\n----------------------EXPERIMENT 5-----------------------");
+        System.out.println("\n\nEXPERIMENT 5: ");
         PerformanceRecorder performance = new PerformanceRecorder();
         System.out.println("-- Deleting all records with 'numVotes' of 1000 -- ");
         long startTime = System.nanoTime();
@@ -953,9 +953,9 @@ public class BpTree {
 
         db.deleteRecord(deletedAdd);
         long endTime = System.nanoTime();
-        System.out.printf("No. of Nodes in updated B+ tree: %d\n", performance.getTotalNodes());
+        System.out.printf("Number of Nodes in updated B+ tree: %d\n", performance.getTotalNodes());
         tree.countLevel(tree.getRoot());
-        System.out.printf("No. of Levels in updated B+ tree: %d\n", performance.getTreeDegree());
+        System.out.printf("Number of Levels in updated B+ tree: %d\n", performance.getTreeDegree());
         System.out.printf("\nContent of the root node in updated B+ tree: %s\n", BpTree.getRoot().keys);
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
         System.out.printf("Running time of retrieval process: %d nanoseconds\n", duration);

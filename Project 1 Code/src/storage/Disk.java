@@ -148,7 +148,7 @@ public class Disk {
             System.out.printf("Value in range [%d, %d] not found int database!\n",numVotesValue, numVotesValueUpperRange);
         }
         for (Record record : finalRes)
-            System.out.printf("Found Records (Brute Force) %s\n", record);
+            System.out.printf("(Brute Force) %s\n", record);
         return countBlockAccess;
     }
     
@@ -180,10 +180,10 @@ public class Disk {
     }
     
     public void experimentOne() {
-        System.out.println("\n----------------------EXPERIMENT 1-----------------------");
-        System.out.printf("Total Number of Records Stored: %d\n", this.getNumberOfRecords());
-        System.out.println(String.format("Size of Each Record: %d Bytes", Record.size()));
-        System.out.printf("Number of Records Stored in a Block: %d\n", Block.getTotalRecords());
-        System.out.println(String.format("Number of Blocks Allocated: %d\n", this.getNoOfOccupiedBlocks()));
+        System.out.println("\nEXPERIMENT 1: ");
+        System.out.printf("Number of Records Stored: %d\n", this.getNumberOfRecords());
+        System.out.println(String.format("Size of a Record: %d Bytes", Record.size()));
+        System.out.printf("Number of Records in a Block: %d\n", Block.getTotalRecords());
+        System.out.println(String.format("Number of Blocks used: %d\n", this.getNoOfOccupiedBlocks()));
     }
 }

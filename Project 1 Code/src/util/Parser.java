@@ -31,8 +31,8 @@ public class Parser {
 
             while ((line = reader.readLine()) != null) {
                 counter++;
-                if (counter % 100000 == 0)
-                    System.out.println(counter + " data rows read");
+                if (counter % 200000 == 0)
+                    System.out.printf("Reading Data... (%d rows)\n", counter);
                 
                 // Split the line into fields
                 String[] fields = line.split("\t");
@@ -57,14 +57,14 @@ public class Parser {
                 int index = 0;
                 while (true) {
                     try {
-                        System.out.println("\nChoose Experiment (1-5):");
+                        System.out.println("\nSelect Experiment (1-5):");
                         Scanner sc = new Scanner(System.in);
                         index = sc.nextInt();
 
                         if (index > 0 && index < 6) {
                             break;
                         } else {
-                            System.out.println("\nPlease only input 1-5!");
+                            System.out.println("\nInvalid input. (Only input 1-5)");
                         }
                     } catch (Exception e) {
                         System.out.println("\nPlease only input 1-5!");

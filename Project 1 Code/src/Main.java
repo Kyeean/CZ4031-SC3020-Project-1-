@@ -17,10 +17,9 @@ public class Main {
         String fileSeparator = System.getProperty("file.separator");
         // filePath = filePath.concat(separator + "data.tsv");
         filePath = filePath.concat(fileSeparator + "Project 1 Code" + fileSeparator + "src" + fileSeparator + "data.tsv");
-        System.out.print(filePath + "\n");
         File datafile = new File(String.valueOf(filePath));
         if (datafile.exists()) {
-            System.out.print("File Exists\nReading data...\n");
+            System.out.print("Reading data from data.tsv...\n");
             int diskSize = getDiskInput();
             Parser.parseAndLoadData(String.valueOf(filePath), diskSize);
         } else if (!datafile.exists()) {
