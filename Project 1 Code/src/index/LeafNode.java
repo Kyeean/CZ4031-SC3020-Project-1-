@@ -30,7 +30,7 @@ public class LeafNode extends Node {
     }
 
     /* Get Addresses for a given key. */
-    public ArrayList<Address> getAddressesForKey(int key) {
+    public ArrayList<Address> getKeyAddresses(int key) {
         return map.get(key);
     }
 
