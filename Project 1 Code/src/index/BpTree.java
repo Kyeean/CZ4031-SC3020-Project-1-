@@ -410,7 +410,6 @@ public class BpTree {
             removedKey = current.removeKeyAt(0);
             int leftLastIdx = nodeToMergeTo.getLastIdx();
             nodeToMergeTo.insertKeyAt(leftLastIdx + 1, removedKey);
-            // 2. Move over the records
             nodeToMergeTo.insertByRedistribution(removedKey, current.getAddressesForKey(removedKey));
             current.removeKeyInMap(removedKey);
 
@@ -453,7 +452,6 @@ public class BpTree {
 
                 NonLeafNode currParent = current.getParent();
                 currParent.removeChild(current);
-                // if (currParent.getKeySize() > 0){
                 if (inBetweenKeyIdx < 0) {
                     currParent.removeKeyAt(inBetweenKeyIdx + 1);
 
@@ -468,7 +466,6 @@ public class BpTree {
 
                 NonLeafNode currParent = current.getNext().getParent();
                 currParent.removeChild(current);
-                // Check if parent key satisfy min node size
                 if ((currParent.getKeySize() > currParent.getLeafNodeSize())
                         && (currParent.getChildren().size() > current.getLeafNodeSize())) {
                     currParent.removeKeyAt(0);
@@ -480,7 +477,7 @@ public class BpTree {
         int lowerbound = findLowerBound(removedKey);
         int newLowerBound = 0;
         
-        if (current.getParent().getKeySize() >= NoOfChildren) { // check if number of children == original # of children
+        if (current.getParent().getKeySize() >= NoOfChildren) { 
             newLowerBound = lowerbound;
         } else {
             newLowerBound = current.getParent().getChild(0).getFirstKey();
@@ -525,7 +522,7 @@ public class BpTree {
             if (parent.getKeySize() == inBetweenKeyIdx) {
                 parent.replaceKeyAt(inBetweenKeyIdx - 1, key);
 
-                int lastParentChild = receiver.getParent().getKeys().size() - 1;// point to last child
+                int lastParentChild = receiver.getParent().getKeys().size() - 1;
                 int lastParentChildKey = receiver.getParent().getChild(receiver.getParent().getKeys().size())
                         .getFirstKey();
                 if (giver.getParent().getChild(giver.getParent().getChildren().size() - 1).getFirstKey() != key) {
