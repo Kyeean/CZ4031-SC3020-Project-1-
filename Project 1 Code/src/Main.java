@@ -16,7 +16,7 @@ public class Main {
         String filePath = new File("").getAbsolutePath();
         String fileSeparator = System.getProperty("file.separator");
         // filePath = filePath.concat(separator + "data.tsv");
-        filePath = filePath.concat(fileSeparator + "Project 1 Code" + fileSeparator + "src" + fileSeparator + "data.tsv");
+        filePath = filePath.concat(fileSeparator + "src" + fileSeparator + "data.tsv");
         File datafile = new File(String.valueOf(filePath));
         if (datafile.exists()) {
             System.out.print("Reading data from data.tsv...\n");
