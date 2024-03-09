@@ -26,13 +26,13 @@ public class Block {
     public static int getTotalRecords() {
         return totalRecords;
     }
-
+    // Insert into the first available space (unclustered)
     public int insertRecord(Record r) {
-        // Insert into first available space
-        for(int i = 0; i < records.length; i++) {
+        for(int i = 0; i < records.length; i++) { 
             if(records[i] == null) {
                 records[i] = r;
                 this.currentRecords++;
+                //returns position inside the block
                 return i;
             }
         }
@@ -41,7 +41,7 @@ public class Block {
     }
 
     public void deleteRecord(int pos) {
-        // Clear the entry
+        // Clear the entry inside block
         records[pos] = null;
         currentRecords--;
     }

@@ -1,9 +1,9 @@
 package storage;
 
 /**
- * Class representing the logical address of a record
+ * Represents the logical address of a record
  * It contains the ID of the block where the record is stored,
- * and the position of the record within that block.
+ * and the position of the record inside that block.
  */
 public class Address{
     private int blockID;
